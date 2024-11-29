@@ -47,10 +47,12 @@ Solutions to the [Advent of Code 2024](https://adventofcode.com/2024) challenges
 ```
 
 ## Contents
-- [Getting Started](#getting-started)
-  - [Cloning the Repo](#cloning-the-repo)
-  - [Contribution Guidelines](#contribution-guidelines)
-- [Contributors](#contributors)
+- [Advent of Code 2024](#advent-of-code-2024)
+  - [Contents](#contents)
+  - [Getting Started](#getting-started)
+    - [Cloning the repo](#cloning-the-repo)
+    - [Contribution Guidelines](#contribution-guidelines)
+  - [Contributors](#contributors)
 
 ## Getting Started
 ### Cloning the repo
@@ -74,3 +76,4 @@ This should just prevent treading on each others toes, and loss of work etc.
 Here you can get links to the READMEs within everyone's folder.
 - [Dom](./dom/README.md)
 - [Nat](./nat/README.md)
+- [Aedan](./Aedan/README.md)
