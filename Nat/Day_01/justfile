@@ -1,0 +1,45 @@
+# Use with https://github.com/casey/just
+
+# Use uname -m to get the architecture of the system.
+architecture := `uname -m`
+
+# Select an assembler, linker, and debugger.
+#
+# Detect whether the current architecture is aarch64 or not. If it is, then the
+# native as and ld can be used. Otherwise, use binutils-aarch64-linux-gnu to
+# generate the binary for aarch64 architecture.
+as := if architecture == "aarch64" { "as" } else { "aarch64-linux-gnu-as" }
+ld := if architecture == "aarch64" { "ld" } else { "aarch64-linux-gnu-ld" }
+gdb := if architecture == "aarch64" { "gdb" } else { "gdb-multiarch" }
+
+# Define the source and output files.
+src := "main.s"
+obj := "main.o"
+out := "main"
+
+# Default recipe: List available recipes to prevent running unexpectedly.
+_default:
+  just --list
+
+# Assemble the object file without debugging information.
+_assemble:
+  {{ as }} -o {{ obj }} {{ src }}
+
+# Assemble the output file with debugging information.
+_assemble_debug:
+  {{ as }} -g -o {{ obj }} {{ src }}
+
+# Link the executable.
+_link:
+  {{ ld }} -o {{ out }} {{ obj }}
+
+# (Default) build without debugging information.
+build: _assemble _link
+
+# Build with debugging information, and launches gdb after building.
+build_debug: _assemble_debug _link
+  {{ gdb }} {{ out }}
+
+# Cleanup any generated files.
+clean:
+  rm -f {{ out }} {{ obj }}
