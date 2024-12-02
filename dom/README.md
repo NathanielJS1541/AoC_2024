@@ -1,4 +1,4 @@
-# Dom's Advent of Code 2023
+# Dom's Advent of Code 2024
 
 ```text
                   .-----.
