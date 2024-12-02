@@ -4,13 +4,15 @@
 #include <cmath>
 #include <iostream>
 
-std::vector<std::vector<int>*> g_vectors = { new std::vector<int>, new std::vector<int> };
+static std::vector<std::vector<int>*> g_vectors;
 
 void day1prep(void)
 {
+	g_vectors = { new std::vector<int>(), new std::vector<int>() };
+
 	const char* input_filename = "./inputs/d1p1.txt";
 
-	(void)read_file_into_vec(input_filename, g_vectors);
+	(void)read_file_into_vecs(input_filename, COLUMNS, g_vectors);
 
 	for (auto v : g_vectors)
 	{
