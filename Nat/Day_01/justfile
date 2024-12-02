@@ -38,8 +38,8 @@ build: _assemble _link
 
 # Build with debugging information, and launches gdb after building.
 build_debug: _assemble_debug _link
-  {{ gdb }} {{ out }}
+  {{ gdb }} --tui {{ out }}
 
-# Cleanup any generated files.
+# Clean up any generated files.
 clean:
   rm -f {{ out }} {{ obj }}
