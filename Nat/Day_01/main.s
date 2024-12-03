@@ -17,6 +17,10 @@
     // files. This is used as the entry point for the program. 
     .global _start
 
+// Define return codes.
+.equ SUCCESS, 0
+.equ ERR_GET_CWD, 1
+
 // Program execution starts here.
 // NOTE: I use a lot of syscalls in this program, and used this website as a
 // reference: https://arm64.syscall.sh/.
@@ -33,7 +37,7 @@ _start:
 
     // Check for any errors from the syscall.
     cmp x0, 0               // Compare the result in x0 with 0.
-    b.lt error              // if x0 < 0, branch to the error label.
+    b.lt get_cwd_error      // if x0 < 0, branch to the get_cwd_error label.
 
     // Append a path separator to the cwd path.
     ldr x0, =path_buffer    // Load the address of the path_buffer into x0.
@@ -71,14 +75,20 @@ _start:
     svc 0                   // Trigger a supervisor call for the syscall in x8.
 
     // The program has executed successfully if it reaches here.
-    mov x0, 0               // Load 0 into x0 register to indicate success.
+    mov x0, SUCCESS         // Load success return code into x0 register.
     mov x8, 93              // Move the syscall number for exit (93) into x8.
     svc 0                   // Trigger a supervisor call to exit.
 
+// Exit the program with the ERR_GET_CWD error code.
+get_cwd_error:
+    mov x0, ERR_GET_CWD     // Move the ERR_GET_CWD error code into x0.
+    b error                 // Branch to the error label to exit with the error.
+
+// In the event of an error, exit with a specified error code.
+//
+// Arguments:
+// - x0: Error code to return.
 error:
-    // In the event of an error, return the error code as the exit code.
-    //
-    // This assumes that the error code has been loaded into x0.
     mov x8, 93              // Move the syscall number for exit (93) into x8.
     svc 0                   // Trigger a supervisor call to exit.
 
