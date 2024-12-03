@@ -2,7 +2,7 @@ let
   pkgs = import <nixpkgs> {};
 in
 pkgs.mkShell {
-    name = "day2";
+    name = "day3";
     nativeBuildInputs = with pkgs.buildPackages; [
         just
         lazygit
@@ -13,7 +13,7 @@ pkgs.mkShell {
     shellHook = ''
         echo ""
         echo "Advent of Code 2024"
-        echo "Day 2: Red-Nosed Reports - https://adventofcode.com/2024/day/2"
+        echo "Day 3: Mull It Over - https://adventofcode.com/2024/day/3"
         echo "Hy docs: https://hylang.org/hy/doc/v1.0.0"
         echo ""
     '';
