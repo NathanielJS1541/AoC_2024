@@ -1,15 +1,16 @@
 // .data section is used to declare constants.
 .section .data
     // The filename of the input data. This cannot be changed, as the file is in
-    // the git repo, so should always be present.
+    // the git repo, so should always be present. This also represents the
+    // relative path to the file from where the program will be running. 
     filename: .asciz "input.txt"
-    // Reserve 256 bytes of memory as a buffer to store the file path to the
-    // input file.
-    path_buffer: .space 256
     // The path separator used to join the input file name to the directory.
     path_separator: .asciz "/"
     // Newline character used for printing text.
     newline: .asciz "\n"
+    // Reserve 15 bytes of memory as a buffer to read lines from the input file
+    // into.
+    line_buffer: .space 15
 
 // .text section contains the instructions for the program.
 .section .text
@@ -19,37 +20,13 @@
 
 // Define return codes.
 .equ SUCCESS, 0             // Program ran successfully.
-.equ ERR_GET_CWD, 1         // An error occurred trying to get the CWD.
-.equ ERR_OPENING_FILE, 2    // An error occurred opening the input file.
+.equ ERR_OPENING_FILE, 1    // An error occurred opening the input file.
+.equ ERR_READING_FILE, 2    // An error occurred reading the input file.
 
 // Program execution starts here.
 // NOTE: I use a lot of syscalls in this program, and used this website as a
 // reference: https://arm64.syscall.sh/.
 _start:
-    // Get the current working directory that the program was executed in.
-    //
-    // This uses the getcwd syscall, which has the following arguments:
-    // - x0: Pointer to the buffer to store the path in.
-    // - x1: Size of the buffer.
-    ldr x0, =path_buffer    // Load the address of path_buffer into x0.
-    mov x1, 256             // Move the size of the path_buffer (256) into x1.
-    mov x8, 17              // Move the syscall number for getcwd into x8.
-    svc 0                   // Trigger a supervisor call for the syscall in x8.
-
-    // Check for any errors from the syscall.
-    cmp x0, 0               // Compare the result in x0 with 0.
-    b.lt get_cwd_error      // if x0 < 0, branch to the get_cwd_error label.
-
-    // Append a path separator to the cwd path.
-    ldr x0, =path_buffer    // Load the address of the path_buffer into x0.
-    ldr x1, =path_separator // Load the address of the path_separator into x1.
-    bl concat_strings       // Call concat_strings to add the path separator.
-
-    // Append the file name to the cwd path.
-    // path_buffer is already in x0 from adding the path separator.
-    ldr x1, =filename       // Load the address of the file name into x1.
-    bl concat_strings       // Call concat_strings to add the file name.
-
     // Open the input file.
     //
     // This uses the openat syscall, which has the following arguments:
@@ -58,7 +35,7 @@ _start:
     // - x2: Flags to open the file with.
     // - x3: (Optional) File mode (permissions) if file is created.
     mov x0, -100            // Set directory to cwd (AT_FDCWD).
-    ldr x1, =path_buffer    // Use the file path from the path_buffer.
+    ldr x1, =filename       // Use the file name as the relative path from cwd.
     mov x2, 0               // Open the file with read-only (O_RDONLY) flag.
     mov x8, 56              // Move the syscall number for openat into x8.
     svc 0                   // Trigger a supervisor call for the syscall in x8.
@@ -68,29 +45,53 @@ _start:
     cmp x0, 0               // Compare the result in x0 with 0.
     b.lt file_open_error    // if x0 < 0, branch to the file_open_error label.
 
-    // Print the file path for testing.
+// Internal loop to read the file line by line.
+read_line:
+    // This uses the read syscall, which has the following arguments:
+    // - x0: File descriptor.
+    // - x1: Buffer to store the data to.
+    // - x2: Number of bytes to read.
+    //
+    // Returns:
+    // - x0: The number of bytes read on success.
+    // - x0: A negative value on error.
+    mov x0, x19             // Set file descriptor to saved output of openat.
+    ldr x1, =line_buffer    // Write the data to the line_buffer.
+    mov x2, 15              // Each line of the input is 15 bytes long.
+    mov x8, 63              // Move the syscall number for read into x8.
+    svc 0                   // Trigger a supervisor call for the syscall in x8.
+
+    mov x0, -1
+
+    // Check the status of the read syscall.
+    cmp x0, 0               // Check if the return from read syscall against 0.
+    b.lt file_read_error    // if x0 < 0, an error occurred.
+    beq close_file          // if x0 == 0, the end of file was reached.
+
+    // Print the line from the file for testing.
     //
     // This uses the write syscall, which has the following arguments:
     // - x0: File descriptor to write to.
     // - x1: Pointer to the buffer of data to write.
     // - x2: Number of characters from buffer to write.
     mov x0, 1               // Load address of stdout file descriptor into x0.
-    ldr x1, =path_buffer    // Use the path_buffer as the data to write.
-    mov x2, 256             // Write the entire contents of path_buffer.
+    ldr x1, =line_buffer    // Use the line_buffer as the data to write.
+    mov x2, 15              // Write the entire contents of line_buffer.
     mov x8, 64              // Move the syscall number for write into x8.
     svc 0                   // Trigger a supervisor call for the syscall in x8.
 
-    // Print the newline character, so that the terminal prompt appears on a new
-    // line after the program finishes.
+    b read_line             // Loop to read the next line.
+
+// Close the file after reading the entire contents.
+close_file:
+    // This uses the close syscall, which has the following arguments:
+    // - x0: File descriptor.
     //
-    // This uses the write syscall, which has the following arguments:
-    // - x0: File descriptor to write to.
-    // - x1: Pointer to the buffer of data to write.
-    // - x2: Number of characters from buffer to write.
-    mov x0, 1               // Load address of stdout file descriptor into x0.
-    ldr x1, =newline        // Use the newline character as the data to write.
-    mov x2, 1               // Write the single newline character.
-    mov x8, 64              // Move the syscall number for write into x8.
+    // Returns:
+    // - x0: 0 on success.
+    // - x0: -1 on error.
+    mov x0, x19             // Set file descriptor to saved output of openat.
+    mov x8, 57              // Move the syscall number for close into x8.
     svc 0                   // Trigger a supervisor call for the syscall in x8.
 
     // The program has executed successfully if it reaches here.
@@ -98,14 +99,14 @@ _start:
     mov x8, 93              // Move the syscall number for exit (93) into x8.
     svc 0                   // Trigger a supervisor call to exit.
 
+// Exit the program with the ERR_READING_FILE error code.
+file_read_error:
+    mov x0, ERR_READING_FILE// Move the ERR_READING_FILE error code into x0.
+    b error  
+
 // Exit the program with the ERR_OPENING_FILE error code.
 file_open_error:
     mov x0, ERR_OPENING_FILE// Move the ERR_OPENING_FILE error code into x0.
-    b error                 // Branch to the error label to exit with the error.
-
-// Exit the program with the ERR_GET_CWD error code.
-get_cwd_error:
-    mov x0, ERR_GET_CWD     // Move the ERR_GET_CWD error code into x0.
     b error                 // Branch to the error label to exit with the error.
 
 // In the event of an error, exit with a specified error code.
