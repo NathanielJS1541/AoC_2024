@@ -18,8 +18,9 @@
     .global _start
 
 // Define return codes.
-.equ SUCCESS, 0
-.equ ERR_GET_CWD, 1
+.equ SUCCESS, 0             // Program ran successfully.
+.equ ERR_GET_CWD, 1         // An error occurred trying to get the CWD.
+.equ ERR_OPENING_FILE, 2    // An error occurred opening the input file.
 
 // Program execution starts here.
 // NOTE: I use a lot of syscalls in this program, and used this website as a
@@ -48,6 +49,24 @@ _start:
     // path_buffer is already in x0 from adding the path separator.
     ldr x1, =filename       // Load the address of the file name into x1.
     bl concat_strings       // Call concat_strings to add the file name.
+
+    // Open the input file.
+    //
+    // This uses the openat syscall, which has the following arguments:
+    // - x0: Directory file descriptor.
+    // - x1: Path to the file.
+    // - x2: Flags to open the file with.
+    // - x3: (Optional) File mode (permissions) if file is created.
+    mov x0, -100            // Set directory to cwd (AT_FDCWD).
+    ldr x1, =path_buffer    // Use the file path from the path_buffer.
+    mov x2, 0               // Open the file with read-only (O_RDONLY) flag.
+    mov x8, 56              // Move the syscall number for openat into x8.
+    svc 0                   // Trigger a supervisor call for the syscall in x8.
+    mov x19, x0             // Save the file descriptor to x19.
+
+    // Check for any errors from the syscall.
+    cmp x0, 0               // Compare the result in x0 with 0.
+    b.lt file_open_error    // if x0 < 0, branch to the file_open_error label.
 
     // Print the file path for testing.
     //
@@ -78,6 +97,11 @@ _start:
     mov x0, SUCCESS         // Load success return code into x0 register.
     mov x8, 93              // Move the syscall number for exit (93) into x8.
     svc 0                   // Trigger a supervisor call to exit.
+
+// Exit the program with the ERR_OPENING_FILE error code.
+file_open_error:
+    mov x0, ERR_OPENING_FILE// Move the ERR_OPENING_FILE error code into x0.
+    b error                 // Branch to the error label to exit with the error.
 
 // Exit the program with the ERR_GET_CWD error code.
 get_cwd_error:
