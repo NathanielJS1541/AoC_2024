@@ -70,6 +70,7 @@ After this is set up, you can either `clone` this repo using GitHub desktop, usi
 
 This should just prevent treading on each others toes, and loss of work etc.
 
+- Do not commit any of the puzzle texts or inputs from Advent of Code to this repo, as AoC does not allow redistribution.
 - Work in your own branch, and create a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your work into main periodically. You can complete this PR yourself, but it makes it easy to identify what was added by who.
 - Avoid rebasing. This has the potential to create confusing scenarios for others, or overwrite others work if they have based work on a commit that you rebase.
 - Do not `git push --force`! People can and will lose work this way.
