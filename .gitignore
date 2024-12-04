@@ -499,7 +499,10 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
-.vscode
-go.mod
-*.exe
-*.exe
+
+## Ignore Advent of Code input files.
+##
+## These are commonly stored in text formats, i.e. .txt, .tsv, .csv, etc.
+*.csv
+*.tsv
+*.txt
