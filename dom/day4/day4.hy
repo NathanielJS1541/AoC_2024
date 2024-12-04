@@ -1,6 +1,3 @@
-(import re)
-(import functools [reduce])
-(import hy.pyops [*])
 (require hyrule [defmain loop])
 
 (setv FILENAME "input.txt"
