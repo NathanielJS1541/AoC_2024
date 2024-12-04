@@ -9,7 +9,9 @@ As much of AoC as I managed for 2024 👋hea
 ## Day 2 
     - COMPLETE 02/12/2024
     - Language: GO         
-    - Comments: Two functions for part 2 showing loop minimisation timing improvement                                                                                       
+    - Comments: Two functions for part 2 showing loop minimisation timing improvement      
+
+##                                                                                 
                                                                                                                                          
                                                               #@*                                                                        
                                                        #@@@@@@@:#@@@@@@:                                                                 
