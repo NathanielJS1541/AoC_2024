@@ -42,7 +42,7 @@ def Diag(path: Path):
     return sumVal
 
 
-def Main(path: Path):
+def Part1(path: Path):
     sumTotal = 0
     sumTotal += GetHorizontal(path.read_text())
     sumTotal += GetVert(path.read_text())
@@ -50,7 +50,39 @@ def Main(path: Path):
     print(sumTotal)
 
 
+def Part2(path: Path):
+    charArray = [[char for char in line] for line in path.read_text().split("\n")]
+    aPos = []
+    xmasCount = 0
+    for lineNum, line in enumerate(charArray):
+        if lineNum not in [len(charArray), 0]:
+            for colNum, col in enumerate(line):
+                if col == "A" and colNum not in [len(line), 0]:
+                    aPos.append((lineNum, colNum))
+
+    for pos in set(aPos):
+        try:
+            row, col = pos
+            crossText = [
+                [
+                    charArray[row - 1][col - 1],
+                    charArray[row + 1][col + 1],
+                ],
+                [
+                    charArray[row - 1][col + 1],
+                    charArray[row + 1][col - 1],
+                ],
+            ]
+            crossText = "".join(["".join(sorted(x)) for x in crossText])
+            if crossText == "MSMS":
+                xmasCount += 1
+        except IndexError:
+            continue
+    print(xmasCount)
+
+
 if __name__ == "__main__":
     p = Path(sys.argv[1])
 
-    Main(p)
+    Part1(p)
+    Part2(p)
