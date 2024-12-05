@@ -30,21 +30,34 @@
 (defn is-in-order [rules pages]
     (loop [[pageno 1]]
         (if (= pageno (len pages))
-            True
+            (get pages (// (len pages) 2))
             (if (and (in (get pages pageno) rules)
-                     (.union (get rules (get pages pageno))
-                            (set (cut pages None pageno))))
-                (do (print (get rules (get pages pageno))) False)
-                (do (print pageno "ok") (recur (+ pageno 1)))))) )
+                     (.intersection (get rules (get pages pageno))
+                                    (set (cut pages pageno))))
+                0
+                (recur (+ pageno 1))))))
+
+
+(defn fix-order [rules pages]
+    (loop [[pageno 1] [ordered pages] [waswrong False]]
+        (if (= pageno (len pages))
+            (if waswrong (get ordered (// (len pages) 2)) 0)
+            (if (and (in (get pages pageno) rules)
+                     (setx wrongone (.intersection (get rules (get pages pageno))
+                                                   (set (cut pages pageno)))))
+                (do (setv wrongidx (.index ordered wrongone)
+                          firstbit (cut ordered wrongidx))
+                    (recur (+ pageno 1)))
+                (recur (+ pageno 1) ordered waswrong)))))
 
 
 (defmain []
     (setv lines (get-lines FILENAME)
-          [rules books _] (reduce split-rules lines [{} [] False]))
-    (print (list (map (fn [book] (is-in-order rules book)) books)))
+          [rules books _] (reduce split-rules lines [{} [] False])
+          part1-ans (sum (map (fn [book] (is-in-order rules book)) books)))
     (print "Rules:" (.join "\n" (map str (.items rules))) :sep "\n")
-    (print "Books:" (.join "\n" (map str books)) :sep "\n"))
+    (print "Books:" (.join "\n" (map str books)) :sep "\n")
         ; part1-ans (part1 lines)``
         ; part2-ans (part2 lines))
-    ;(print "Answer to part 1:" part1-ans)
+    (print "Answer to part 1:" part1-ans))
     ; (print "Answer to part 2:" part2-ans))
