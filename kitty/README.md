@@ -14,9 +14,23 @@ As much of AoC as I managed for 2024 👋hea
 ## Day 3
   - COMPLETE 04/12/2024
   - Language: C++
-  - Comments: Getting started with c++.   
+  - Comments: Getting started with c++.  
 
-##                                                                                 
+## Day 4
+  - COMPLETE 05/12/2024
+    - Language: C++
+    - Comment: Used kernels applied over data so any word/ pattern could be used.
+
+## Day 5
+ - STARTED
+    - using unordered maps
+    - using unique (auto memory managed) pointers
+
+## Day 6
+ - COMPLETED 06/12/2024
+    - Language: C++
+    - lots of loops into an array again
+##                                                               
                                                                                                                                          
                                                               #@*                                                                        
                                                        #@@@@@@@:#@@@@@@:                                                                 
