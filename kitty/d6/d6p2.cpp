@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
     // define file location string
-    string file = "test.txt";
+    string file = "input.txt";
     string line;
     string fullText;
 
@@ -20,6 +20,7 @@ int main()
 
     // get array width
     getline(myReadFile, line);
+
     int matrixWidth = line.length();
 
     // add a boundary to the map
@@ -54,19 +55,16 @@ int main()
     }
 
     // find the initial position of the guard
-    int gaurdPos[] = {0, 0};
-    int gaurdPosNext[] = {0, 0};
+    int gaurdPosInitial[] = {0, 0};
 
-    for (int row = 1; row < matrixHeight+1; row++)
+    for (int row = 1; row < matrixHeight + 1; row++)
     {
-        for (int col = 1; col < matrixWidth+1; col++)
+        for (int col = 1; col < matrixWidth + 1; col++)
         {
-            if (fullText[(matrixWidth)*row + col] == '^')
+            if (fullText[(matrixWidth + 2) * row + col] == '^')
             {
-                gaurdPos[0] = row;
-                gaurdPos[1] = col;
-                gaurdPosNext[0] = row;
-                gaurdPosNext[1] = col;
+                gaurdPosInitial[0] = row;
+                gaurdPosInitial[1] = col;
 
                 break;
             }
@@ -86,47 +84,43 @@ int main()
     Direction state = UP;
     Direction nextState = UP;
 
-    // create a vector to store all the used positions
-    vector<bool> usedPositions(fullText.length());
-
-    int sum = 0;
-    int stateCount = 0; // the guard must have entered each state at least once for a loop to occur. This gets reset if a new position is used (a new path has been taken)
+    // the guard must have entered each state at least once for a loop to occur. This gets reset if a new position is used (a new path has been taken)
+    int stateCount = 0; 
     int loopCount = 0;
 
     char prevChar = '0';
+
+    int gaurdPos[] = {0, 0};
+    int gaurdPosNext[] = {0, 0};
 
     // iterate over every posible position number and check if sum has not increased when all states completed.
     // Not including the boundaries
     for (int row = 1; row < matrixHeight + 1; row++)
     {
-        for (int col = 0; col < matrixWidth + 1; col++)
+        for (int col = 1; col < matrixWidth + 1; col++)
         {
             // set the obsicle position- if there wasnt one one there already
             if (fullText[(row) * (matrixWidth + 2) + col] != '#')
             {
                 prevChar = fullText[row * (matrixWidth + 2) + col];
 
-                fullText[row * (matrixWidth + 2) + col] = '#';
-                
-                cout << "Full Matrix: " << endl;
+                fullText[row* (matrixWidth + 2) + col] = '#';
 
-                for (int i = 1; i < matrixHeight + 1; i++)
-                {
-                    for (int j = 1; j < matrixWidth + 1; j++)
-                    {
-                        cout << fullText[i * (matrixWidth + 2) + j];
-                    }
-
-                    cout << "\n";
-                }
+                // set the state counter and the guard positions for a new run
+                // create a vector to store all the used positions
+                vector<bool> usedPositions(fullText.length());
                 stateCount = 0;
+                state = UP;
+                cont = true;
+
+                copy(begin(gaurdPosInitial), end(gaurdPosInitial), gaurdPosNext);
+                copy(begin(gaurdPosInitial), end(gaurdPosInitial), gaurdPos);
 
                 while (cont)
                 {
                     switch (state)
                     {
                     case UP:
-
                         // move up one row
                         gaurdPosNext[0] = gaurdPos[0] - 1;
                         nextState = RIGHT;
@@ -151,8 +145,13 @@ int main()
                         break;
                     }
 
+                    // check if the guard leaves the map
+                    if (fullText[gaurdPos[0] * (matrixWidth + 2) + gaurdPos[1]] == '0')
+                    {
+                        cont = false;
+                    }
                     // check if a barrier was hit
-                    if (fullText[gaurdPosNext[0] * (matrixWidth + 2) + gaurdPosNext[1]] == '#')
+                    else if (fullText[gaurdPosNext[0] * (matrixWidth + 2) + gaurdPosNext[1]] == '#')
                     {
                         // reset the guard position
                         gaurdPosNext[0] = gaurdPos[0];
@@ -160,11 +159,6 @@ int main()
 
                         state = nextState;
                         stateCount++;
-                    }
-                    // check if the guard leaves the map
-                    else if (fullText[gaurdPos[0] * (matrixWidth + 2) + gaurdPos[1]] == '0')
-                    {
-                        cont = false;
                     }
                     // if not add another position to the sum
                     else
@@ -175,16 +169,16 @@ int main()
                             stateCount = 0;
                         }
 
-                        copy(gaurdPosNext, gaurdPosNext + 2, gaurdPos);
+                        copy(begin(gaurdPosNext), end(gaurdPosNext), begin(gaurdPos));
                     }
 
-                    if (stateCount == 3)
+                    if (stateCount == 4)
                     {
                         loopCount++;
-                        continue;
+                        cont = false;
                     }
                 }
-                
+
                 // reset the array
                 fullText[row * (matrixWidth + 2) + col] = prevChar;
             }

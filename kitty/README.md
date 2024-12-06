@@ -21,7 +21,15 @@ As much of AoC as I managed for 2024 👋hea
     - Language: C++
     - Comment: Used kernels applied over data so any word/ pattern could be used.
 
+## Day 5
+ - STARTED
+    - using unordered maps
+    - using unique (auto memory managed) pointers
 
+## Day 6
+ - COMPLETED 06/12/2024
+    - Language: C++
+    - lots of loops into an array again
 ##                                                               
                                                                                                                                          
                                                               #@*                                                                        
