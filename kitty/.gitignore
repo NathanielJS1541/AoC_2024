@@ -23,6 +23,7 @@
 
 # Go workspace file
 go.work
+go.mod
 go.work.sum
 
 # env file
