@@ -11,7 +11,6 @@ using namespace std;
 
 int main()
 {
-
     // open the file and read it
     ifstream inputFile("input.txt");
     string line;
@@ -31,14 +30,18 @@ int main()
 
     // loop through the matrix and find all the unique characters
     vector<char> characters;
+    int charCount = 0;
 
     for (int row = 0; row < matrixHeight; row++)
     {
         for (int col = 0; col < matrixWidth; col++)
         {
-            // if the character is not a '.' (the blank space char then count this as a unique character)
-            if (inputText[row * matrixWidth + col] != '.')
+            // if the character is not an antenna (for test) and not a '.' (the blank space char then count this as a unique character)
+            if ((inputText[row * matrixWidth + col] != '.') && (inputText[row * matrixWidth + col] != '#'))
             {
+                // each character is an antenna now so count this
+                charCount++;
+
                 // make sure this chacacter has not already been counted
                 if (count(characters.begin(), characters.end(), inputText[row * matrixWidth + col]) == 0)
                 {
@@ -92,40 +95,56 @@ int main()
             // compare this index to all other indexes
             for (auto secondIndex : indexes)
             {
+                // if we are not looking at the same index for both characters
                 if (firstIndex != secondIndex)
                 {
-                    // index closer to i is:
-                    node[0] = firstIndex[0] + (firstIndex[0] - secondIndex[0]);
-                    node[1] = firstIndex[1] + (firstIndex[1] - secondIndex[1]);
+                    int nodesfrompair = 1;
 
-                    // check if this node is in bounds
-                    if (((0 <= node[0]) && (node[0] < matrixHeight)) && ((0 <= node[1]) && (node[1] < matrixWidth)))
+                    // keep adding antennas in the given direction until the the node becomes out of range 
+                    while (((0 <= node[0]) && (node[0] < matrixHeight)) && ((0 <= node[1]) && (node[1] < matrixWidth)))
                     {
-                        // check if the node has not already been counted
-                        if (antennaMap[node[0] * matrixWidth + node[1]] != '#')
+                        // index closer to i is:
+                        node[0] = firstIndex[0] + (firstIndex[0] - secondIndex[0]) * nodesfrompair;
+                        node[1] = firstIndex[1] + (firstIndex[1] - secondIndex[1]) * nodesfrompair;
+
+                        // cout << "Attempted node: " << node[0] << ", " << node[1] << endl;
+
+                        // check if this node is in bounds
+                        if (((0 <= node[0]) && (node[0] < matrixHeight)) && ((0 <= node[1]) && (node[1] < matrixWidth)))
                         {
-                            nodeCount++;
-                            antennaMap[node[0] * matrixWidth + node[1]] = '#';
+                            // check if the node has not already been counted, this time as the characters have already been counted check
+                            // that this is a '.' blank space
+                            if (antennaMap[node[0] * matrixWidth + node[1]] != '#' && antennaMap[node[0] * matrixWidth + node[1]] == '.')
+                            {
+                                nodeCount++;
+                                antennaMap[node[0] * matrixWidth + node[1]] = '#';
+                            }
                         }
+
+                        nodesfrompair++;
                     }
                 }
+                // reset the node
+                node[0] = 0;
+                node[1] = 0;
             }
         }
-    }
 
-    cout << "Output antenna map: " << endl;
+        // print the map of the antennas
+        cout << "Output antenna map: " << endl;
 
-    for (int row = 0; row < matrixHeight; row++)
-    {
-        for (int col = 0; col < matrixWidth; col++)
+        for (int row = 0; row < matrixHeight; row++)
         {
-            cout << antennaMap[row * matrixWidth + col];
+            for (int col = 0; col < matrixWidth; col++)
+            {
+                cout << antennaMap[row * matrixWidth + col];
+            }
+            cout << "\n";
         }
-        cout << "\n";
     }
 
     cout << "\n"
          << endl;
 
-    cout << "The number of unique antinodes is: " << nodeCount << endl;
+    cout << "The number of unique antinodes is: " << nodeCount + charCount << endl;
 }

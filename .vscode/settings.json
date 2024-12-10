@@ -3,6 +3,7 @@
         "iostream": "cpp",
         "regex": "cpp",
         "iterator": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "xstring": "cpp"
     }
 }
