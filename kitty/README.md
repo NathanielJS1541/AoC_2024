@@ -1,5 +1,5 @@
 # Kitty's AoC
-As much of AoC as I managed for 2024 👋hea
+As much of AoC as I managed for 2024 👋
 
 ## Day 1 
     - COMPLETE 01/12/2024
@@ -22,14 +22,27 @@ As much of AoC as I managed for 2024 👋hea
     - Comment: Used kernels applied over data so any word/ pattern could be used.
 
 ## Day 5
- - STARTED
-    - using unordered maps
-    - using unique (auto memory managed) pointers
+ - COMPLETE 06/12/2024
+    - Language: C++
+      - Comment: using unordered maps, using unique (auto memory managed) pointers
 
 ## Day 6
  - COMPLETED 06/12/2024
     - Language: C++
-    - lots of loops into an array again
+    - Comment: lots of loops into an array again
+
+## Day 7
+ - STARTED 08/12/2024
+  - Language: C++
+  - Comment: using unqiue pointers again to allow for nullptrs
+
+## Day 8
+  - COMPLETE 09/12/2024
+    - Language: C++
+    - Comments: 
+      - More matrix handling
+
+## Da
 ##                                                               
                                                                                                                                          
                                                               #@*                                                                        
