@@ -16,4 +16,4 @@ Part 2 could most likely have been done in a better way but manually separating 
 
 Part 1 possible using only the textsplit using deliminators purely because there's no instances of whitespaces that discount vaild data. If there was like as described in the example, this probably wouldn't have worked :(
 
-Part 2 looks hard..
+Part 2 why did i do this to myself
