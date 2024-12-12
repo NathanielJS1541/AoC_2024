@@ -1,4 +1,4 @@
 @deafult: run
 
 run:
-    hy day6.hy
+    fennel day7.fnl
