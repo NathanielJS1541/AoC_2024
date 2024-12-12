@@ -6,6 +6,9 @@
 
 static std::vector<std::vector<int>*> g_vectors;
 
+static bool check_sequence_is_safe(std::vector<int>* p_vec, bool allow_one_error);
+static int check_step_sequence(std::vector<int> steps);
+
 void day2prep(void)
 {	
 	const char* input_filename = "./inputs/d2.txt";
@@ -29,12 +32,7 @@ int day2part1(void)
 	int n_safe = 0;
 	for (auto v : g_vectors)
 	{
-		std::tuple<int, int> steps = determine_step_sequence(v);
-		int n_steps = std::get<0>(steps);
-		int max_step = std::get<1>(steps);
-		/* Number of steps taken is equal to the number of elements minus the first, obviously.
-		 * AND the maximum step taken is less than 4, (1-3) permitted */
-		if ((n_steps == ((int)v->size() - 1)) && (max_step < 4)) n_safe++;
+		if(check_sequence_is_safe(v, false)) n_safe++;
 	}
 	return n_safe;
 }
@@ -44,15 +42,10 @@ int day2part2(void)
 	int n_safe = 0;
 	for (auto v : g_vectors)
 	{
-		std::tuple<int, int> steps = determine_step_sequence(v);
-		int n_steps = std::get<0>(steps);
-		int max_step = std::get<1>(steps);
-		int steps_off = abs(n_steps - (int)v->size());
-		if ((steps_off < 2) && (steps_off > 0) && (max_step < 4)) n_safe++;
-
-		std::cout << "(";
-		for (auto x : *v) { std::cout << x << " "; }
-		std::cout << ") " << steps_off << " " << max_step << " " << n_safe << std::endl;
+		bool safe = false;
+		if (v->size() <= 2) safe = true; /* You can always remove one item to make a list valid */
+		if (check_sequence_is_safe(v, true)) safe = true;
+		if (safe) n_safe++;
 	}
 	return n_safe;
 }
@@ -74,4 +67,75 @@ int day2(void)
 	std::cout << part2 << std::endl;
 	day2cleanup();
 	return part2;
+}
+
+static bool check_sequence_is_safe(std::vector<int>* p_vec, bool allow_one_error)
+{
+	bool safe = false;
+	std::vector<int> steps = *p_vec;
+	int err_idx = check_step_sequence(steps);
+	if (err_idx >= 0)
+	{
+		if (allow_one_error)
+		{	
+			for (unsigned n = 0; (n < p_vec->size()); n++)
+			{
+				std::vector<int> new_vec = *p_vec;
+				new_vec.erase(new_vec.begin() + n);
+				if (check_sequence_is_safe(&new_vec, false))
+				{
+					safe = true;
+					break;
+				}
+			}	
+		}
+	} 
+	else
+	{
+		safe = true;
+	}
+
+	return safe;
+}
+
+/* Check the step sequence passes the safe criteria, if not return the index in the step sequence that doesn't.
+ * Returns -1 if pass */
+static int check_step_sequence(std::vector<int> steps)
+{
+	const int maximum_step = 3;
+	int trend = 0;
+	int idx = -1;
+	bool err = false;
+	if (steps.size() == 1) return -1;
+	
+	for (auto it = std::begin(steps); ((it + 1) < std::end(steps)); it++)
+	{
+		int c = *it;
+		int n = *(it + 1);
+		int d = (n - c);
+		int loc_trend = trend;
+		
+
+		if (abs(d) > maximum_step) err = true;
+		
+		if (d < 0) loc_trend--;
+		else if (d > 0) loc_trend++;
+		else if (d == 0) err = true;	
+
+		if (	((d < 0) && (trend > 0) && (loc_trend < trend))
+			|| ((d > 0) && (trend < 0) && (loc_trend > trend)))
+		{
+			err = true;
+		}
+
+		trend = loc_trend;
+	
+		if (err)
+		{
+			idx = it - std::begin(steps); 
+			break;
+		}
+	}
+	
+	return idx;
 }

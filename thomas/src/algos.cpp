@@ -54,32 +54,3 @@ std::unordered_map<int, int> create_occurance_table(std::vector<int>* p_vec)
 
 	return otable;
 }
-
-/* determine_step_sequence 
- *
- * NOTE: Returns a tuple containing the absolute number of steps taken
- * 	 and the absolute maximum step number, even if the step count
- * 	 and the maximum step *should* be negative.
- */
-std::tuple<int, int> determine_step_sequence(std::vector<int>* p_vec)
-{
-	std::vector<int> vec = *p_vec;
-	int step = 0;
-	int max_step = 0; /* Absolute widest step taken */
-
-	for (auto it = std::begin(vec); it < std::end(vec); it++)
-	{
-		int current = *(it);
-		if ((it + 1) < std::end(vec))
-		{
-			int next = *(it + 1);
-			int diff = next - current;
-			if (diff < 0) step--;
-			if (diff > 0) step++;
-			diff = abs(diff);
-			if (diff > max_step) max_step = diff;
-		}
-	}
-
-	return std::tuple<int, int>(abs(step), max_step);
-}
