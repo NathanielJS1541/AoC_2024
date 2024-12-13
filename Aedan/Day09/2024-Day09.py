@@ -67,7 +67,10 @@ def ShrinkHDDBlocks(hddList):
                         hddList[idx] = (".", newVal[1])
                         hddList.insert(dstIdx, newVal)
                         hddList.pop(dstIdx + 1)
+                    # print("".join([str(x[0]) * x[1] for x in hddList if x[1] > 0]))
+                    # x = input()
                     break
+
     result = "".join([str(x[0]) * x[1] for x in hddList if x[1] > 0])
     return [int(x) if x.isnumeric() else x for x in result]
 
@@ -90,5 +93,5 @@ def ShrinkHDD(hddList):
 
 
 if __name__ == "__main__":
-    p = Path(r"c:\mysources\Aedan\AOC\AoC_2024\Aedan\Day09\2024-Day09.txt")  # Path(sys.argv[1])
+    p = Path(sys.argv[1])
     Main(p)
