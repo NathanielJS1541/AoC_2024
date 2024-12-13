@@ -8,7 +8,7 @@ pkgs.mkShell {
         lazygit
         neovim
         hy
-	python312Packages.hyrule
+        python311Packages.hyrule
     ];
     shellHook = ''
         echo ""
