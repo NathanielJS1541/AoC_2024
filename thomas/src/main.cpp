@@ -3,6 +3,7 @@
 int main(void)
 {
 	//day1();
-	day2();
+	//day2();
+	day3();
 	return 1;
 }

@@ -72,3 +72,21 @@ int read_file_into_vecs(const char* filename, e_read_format format, std::vector<
 	}
 	return n_items_read;
 }
+
+std::string read_file_into_string(const char* filepath)
+{
+	std::fstream file = open_file_read(filepath);
+	std::string file_as_string;
+	if (file.is_open())
+	{
+		std::ostringstream stream; 
+		stream << file.rdbuf();
+		file_as_string =  stream.str();
+	}
+	else
+	{
+		file_as_string.empty();
+	}
+
+	return file_as_string;
+}
