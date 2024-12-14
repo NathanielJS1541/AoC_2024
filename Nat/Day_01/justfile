@@ -36,10 +36,10 @@ _link:
 # (Default) build without debugging information.
 build: _assemble _link
 
-# Build with debugging information, and launches gdb after building.
-build_debug: _assemble_debug _link
-  {{ gdb }} --tui {{ out }}
-
 # Clean up any generated files.
 clean:
   rm -f {{ out }} {{ obj }}
+
+# Build with debugging information, and launches gdb after building.
+debug: _assemble_debug _link
+  {{ gdb }} --tui {{ out }}
