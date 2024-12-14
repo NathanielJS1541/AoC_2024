@@ -111,6 +111,10 @@ This should just prevent treading on each others toes, and loss of work etc.
 Here you can get links to the READMEs within everyone's folder.
 
 - [Aedan](./Aedan/README.md)
+- [Alec](./alec/README.md)
 - [Dom](./dom/README.md)
+- [Felix](./Felix/README.md)
+- [Kitty](./kitty/README.md)
 - [Nat](./Nat/README.md)
 - [Nika](./Nika/README.md)
+- [Tom](./thomas/README.md)
