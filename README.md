@@ -78,6 +78,8 @@ SSH do `git clone git@github.com:NathanielJS1541/AoC_2024.git`.
 
 This should just prevent treading on each others toes, and loss of work etc.
 
+- Do not commit any of the puzzle texts or inputs from Advent of Code to this
+  repo, as AoC does not allow redistribution.
 - Work in your own branch, and create a
   [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
   to merge your work into main periodically. You can complete this PR yourself,
@@ -85,7 +87,8 @@ This should just prevent treading on each others toes, and loss of work etc.
 - Avoid rebasing. This has the potential to create confusing scenarios for
   others, or overwrite others work if they have based work on a commit that you
   rebase.
-- Do not `git push --force`! People can and will lose work this way.
+- Do not `git push --force` into shared branches! People can and will lose work
+  this way.
 - Create your own named folder inside the root of this repo to reflect your
   name, for example `AoC_2024/bob`. From there you can structure it however you
   like, and create your own README.md that can be linked to the
@@ -104,7 +107,10 @@ This should just prevent treading on each others toes, and loss of work etc.
   the repo are ignored, as these are usually placed in the root. 
 
 ## Contributors
+
 Here you can get links to the READMEs within everyone's folder.
+
 - [Aedan](./Aedan/README.md)
 - [Dom](./dom/README.md)
 - [Nat](./Nat/README.md)
+- [Nika](./Nika/README.md)
