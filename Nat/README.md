@@ -1,7 +1,7 @@
 # Nat's Advent of Code 2024 Solutions
 
 This folder contains my solutions to the 2024 Advent of Code. I thought I'd keep
-it "interesting" by choosing languages I'm not familliar with, which inevitably
+it "interesting" by choosing languages I'm not familiar with, which inevitably
 means each challenge will take me hours...
 
 ## Table of Contents
