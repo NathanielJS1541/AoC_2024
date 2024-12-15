@@ -1,4 +1,4 @@
-# Day 1: Historian Hysteria
+# Advent of Code Day 1
 
 - Language of choice: AArch64 Assembly.
 - Difficulty: Yes. (I'm a C# developer...)
