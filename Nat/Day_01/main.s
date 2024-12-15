@@ -69,8 +69,10 @@
     .equ err_file_open_string_len, . - err_file_open_string
     err_file_read_string: .asciz "Failed to read the input file.\n"
     .equ err_file_read_string_len, . - err_file_read_string
-    output_prefix: .asciz "Calculated a total distance of: "
-    .equ output_prefix_len, . - output_prefix
+    distance_prefix: .asciz "Calculated a total distance of: "
+    .equ distance_prefix_len, . - distance_prefix
+    similarity_prefix: .asciz "Calculated a similarity score of: "
+    .equ similarity_prefix_len, . - similarity_prefix
     output_suffix: .asciz ".\n"
     .equ output_suffix_len, . - output_suffix
     invalid_arguments: .asciz "Error: Invalid arguments provided.\n"
@@ -202,7 +204,7 @@ close_file:
 sort_arrays:
     // Work out the maximum array index for both arrays and save it to a
     // callee-saved register, since both arrays are the same size.
-    mov x22, INPUT_SIZE     // x1 = size of column arrays in bytes.
+    mov x22, INPUT_SIZE     // x22 = size of column arrays in bytes.
     lsr x22, x22, #2        // Divide x22 by 4 to get maximum index (1-based).
     sub x22, x22, #1        // Max index - 1 as it needs to be 0-based.
 
@@ -254,25 +256,110 @@ distance_loop:
     subs x9, x9, #1         // Decrement the array index (and set flags).
     b.ge distance_loop      // Restart loop if index in x9 >= 0.
 
-    // Print the prefix text that explains the value being printed to stdout.
-    ldr x0, =output_prefix  // x0 = pointer to the output prefix.
-    ldr x1, =output_prefix_len // x1 = output prefix string length.
-    bl print_string         // Call print_string with provided arguments.
+    // Print the calculated distance score.
+    ldr x0, =distance_prefix // x0 = pointer to the distance prefix.
+    ldr x1, =distance_prefix_len // x1 = distance prefix string length.
+    mov x2, x23             // x2 = calculated distance value.
+    bl print_output_value   // Print the prefix text and output value.
 
-    // Convert the calculated distance value to a string.
-    mov x0, x23             // x0 = total calculated distance.
-    ldr x1, =print_buffer   // x1 = destination array = print buffer.
-    bl uint_to_string       // Call uint_to_string function with provided args.
+    // Prepare registers to calculate the "similarity" between the two lists.
+    //
+    // Load them into callee-saved registers to preserve their states.
+    mov x19, #0             // x19 = total similarity score.
+    ldr x20, =left_column   // x20 = pointer to left array.
+    ldr x21, =right_column  // x21 = pointer to right array.
+    // Initialise the indexes to -1 to simplify the loops.
+                             // x22 = left segment start index.
+    mov x23, #-1             // x23 = left segment end index.
+                             // x24 = right segment start index.
+    mov x25, #-1             // x25 = right segment end index.
+    // Calculate maximum array index.
+    mov x26, INPUT_SIZE     // x26 = size of column arrays in bytes.
+    lsr x26, x26, #2        // Divide x26 by 4 to get maximum index (1-based).
+    sub x26, x26, #1        // Max index - 1 as it needs to be 0-based.
 
-    // Print the string representation of the calculated distance.
-    mov x1, x0              // Move string length to x1 for print_string call.
-    ldr x0, =print_buffer   // x0 = pointer to the print buffer.
-    bl print_string         // Call print_string with provided arguments.
+    // Internal loop to calculate the "similarity" between the two lists.
+    //
+    // Since the lists are already in order, each of the same number will occur
+    // in sequence.
+similarity_loop:
+    add x22, x23, #1        // Move start to after the previous segment end.
+    cmp x22, x26            // Compare new index to max index.
+    b.hi similarity_loop_finished // Exit loop if array end reached.
 
-    // Print the suffix text that terminates the line.
-    ldr x0, =output_suffix  // x0 = pointer to the output suffix.
-    ldr x1, =output_suffix_len // x1 = output suffix length.
-    bl print_string         // Call print_string with provided arguments.
+    // Find the end index of the current left segment.
+    mov x0, x20             // x0 = pointer to left array.
+    mov x1, x22             // x1 = left segment start index.
+    mov x2, x26             // x2 = maximum array index.
+    bl get_uniform_segment  // Find the index of the end of the segment.
+    mov x23, x0             // Store the index of the end of the segment.
+
+    // Prepare to find the matching segment in the right array.
+    ldr w9, [x20, x22, lsl #2] // Load the value at current left start index.
+    mov x24, x25            // Move start to the previous segment end.
+
+    // Internal loop to identify the start of the uniform segment in the right
+    // array that matches the segment in the left array.
+match_start_index:
+    add x24, x24, #1        // Increment the right index start pointer.
+    cmp x24, x26            // Compare new index to max index.
+    b.hi similarity_loop_finished // Exit loop if array end reached.
+    ldr w10, [x21, x24, lsl #2] // Load the value at current right start index.
+    cmp w9, w10             // Compare the values at the start array indexes.
+    b.hi match_start_index  // If left > right, go to next right index.
+
+    // If this point is reached, the current value at the right start index is
+    // either greater than or equal to the value in the left uniform segment.
+    //
+    // - If the right value is greater, then the value in the uniform left
+    //   segment doesn't occur in the right array. The next uniform segment in
+    //   the left array should be identified and the right end index should be
+    //   updated to the current start index - 1, so that the next loop iteration
+    //   starts at the current position.
+    // - If the right value is equal, then the two arrays share a segment with a
+    //   uniform value. The end of this segment should be identified.
+
+    b.eq find_right_segment // If the value is equal, find the segment end.
+
+    // The right value is greater, so prepare the right end index for the next
+    // call to the loop. The end index is moved to the previous value, as it has
+    // not yet been identified whether the larger (current) value in the right
+    // array is present in the left array.
+    sub x25, x24, #1        // Move the end index to the previous lower value.
+    b similarity_loop       // Move to the next left index segment.
+
+find_right_segment:
+    // Find the end index of the current right segment.
+    mov x0, x21             // x0 = pointer to right array.
+    mov x1, x24             // x1 = right segment start index.
+    mov x2, x26             // x2 = maximum array index.
+    bl get_uniform_segment  // Find the index of the end of the segment.
+    mov x25, x0             // Store the index of the end of the segment.
+
+    // Calculate the similarity score for both segments.
+    ldr w9, [x20, x22, lsl #2] // Load the value at current left start index.
+    sub x10, x23, x22       // Get number of elements in left segment.
+    add x10, x10, #1        // No. of elements + 1 to account for end element.
+    sub x11, x25, x24       // Get number of elements in right segment.
+    add x11, x11, #1        // No. of elements + 1 to account for end element.
+    mul x12, x11, x9        // Similarity = no. right elements * value.
+    mul x13, x10, x12       // Tot. similarity = no. left elements * similarity.
+    add x19, x19, x13       // Add to cumulative similarity score.
+
+    b similarity_loop       // Move to the next pair of segments.
+
+    // All segments in the arrays have been identified and the similarity score
+    // has been calculated.
+similarity_loop_finished:
+
+    // Print the calculated similarity score.
+    ldr x0, =similarity_prefix // x0 = pointer to the similarity prefix.
+    ldr x1, =similarity_prefix_len // x1 = similarity prefix string length.
+    mov x2, x19             // x2 = calculated similarity value.
+    bl print_output_value   // Print the prefix text and output value.
+
+    // Exit the program with the success message.
+program_end:
 
     // Print success message, loading the string pointer into x0 and the length
     // into x1.
@@ -353,6 +440,38 @@ file_read_error:
     ldr x1, =err_file_read_string_len
     mov x2, ERR_READING_FILE // Move the ERR_READING_FILE error code into x2.
     b error_with_message    // Print the error message and exit with an error.
+
+// Function to find a segment of an array, where each element is the same. The
+// index is limited to the maximum array index passed in to register x2.
+//
+// Arguments:
+// - x0: Pointer to the start of the array.
+// - x1: Index of the array to start the segment at.
+// - x2: The maximum index of the array.
+//
+// Returns:
+// - x0: Index of the end of the segment, where every element is uniform.
+get_uniform_segment:
+    ldr w9, [x0, x1, lsl #2] // Load the value at the current start index.
+
+    // Internal loop to identify the last index of the segment where every
+    // element is uniform.
+segment_end_loop:
+    add x1, x1, #1          // Increment the array index.
+    cmp x1, x2              // Compare new index with index limit.
+    b.hi uniform_segment_end // If index > limit, return.
+    ldr w10, [x0, x1, lsl #2] // Load the value at the current index.
+    cmp w9, w10             // Compare start value and current value.
+    b.eq segment_end_loop   // Restart loop if values equal.
+
+uniform_segment_end:
+    // After the first non-uniform value is found, decrement the index in x1 for
+    // return, so that it is the index of the last uniform value.
+    //
+    // Note that if the index exceeded the maximum index, this will also correct
+    // it to be equal to the maximum index.
+    sub x0, x1, #1          // Get index of last uniform value.
+    ret                     // Return the end index.
 
 // Function to convert one of the input numbers in string format to (unsigned)
 // integer format. For simplicity sake, this assumes that the number is from the
@@ -695,6 +814,64 @@ partition_done:
     // all elements on the left of the pivot are less than the pivot, and all
     // elements on the right of the pivot are greater than the pivot.
     mov x0, x11             // Return the index of the next partition.
+    ret
+
+// Function to print an output value with descriptor text. The prefix text gives
+// context to the value.
+//
+// Arguments:
+// - x0: Pointer to value prefix text.
+// - x1: Prefix text length.
+// - x2: The value to print after the prefix text.
+print_output_value:
+    // Since this function uses branches with links, store the state of the
+    // frame pointer (x29) and link register (x30) so they can be restored
+    // later.
+    //
+    // These are stored on top of the stack by taking the current stack pointer
+    // (sp), decrementing it by 16 bytes before the store instruction (using
+    // pre-indexing denoted by !), and using the stack pointer value to store
+    // the registers to.
+    stp x29, x30, [sp, #-16]!
+
+    // Store the current values of the used callee-saved registers that will be
+    // used to the stack, so they can be reset on return. Note the use of the
+    // zero register (zxr) as a dummy register, to maintain 16-byte alignment of
+    // the stack.
+    stp x19, xzr, [sp, #-16]!
+
+    mov x19, x2             // Move the output value to a callee-saved register.
+
+    // Print the prefix text that explains the value being printed to stdout.
+    // Note that x0 and x1 are already loaded with the correct arguments.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Convert the output value to a string.
+    mov x0, x19             // x0 = stored value.
+    ldr x1, =print_buffer   // x1 = destination array = print buffer.
+    bl uint_to_string       // Call uint_to_string function with provided args.
+
+    // Print the string representation of the output value.
+    mov x1, x0              // Move string length to x1 for print_string call.
+    ldr x0, =print_buffer   // x0 = pointer to the print buffer.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Print the suffix text that terminates the line.
+    ldr x0, =output_suffix  // x0 = pointer to the output suffix.
+    ldr x1, =output_suffix_len // x1 = output suffix length.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Restore previous callee-saved register states from the stack. Note the
+    // use of the zero register (zxr) as a dummy register, to maintain 16-byte
+    // alignment of the stack.
+    ldp x19, xzr, [sp], #16
+
+    // Before returning, load the original frame pointer (x29) and link register
+    // (x30) states back so that the ret functions as expected.
+    //
+    // The values are taken from the top of the stack, and the stack pointer
+    // value is then incremented using a post-index offset to "free" the memory.
+    ldp x29, x30, [sp], #16
     ret
 
 // Function to write a string to standard output.

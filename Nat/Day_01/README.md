@@ -2,6 +2,9 @@
 
 - Language of choice: AArch64 Assembly.
 - Difficulty: Yes. (I'm a C# developer...)
+- Final binary size: `5888 bytes`.
+- Test hardware: Raspberry Pi 4.
+- Program runtime: `~4ms`.
 
 <!-- omit from toc -->
 ## Contents
@@ -182,25 +185,25 @@ Once in the program, set breakpoints as normal with `break`, and use `continue`,
 The following commands can then be used within `gdb` to inspect the buffers that
 store each column of data:
 
-Store the first 10 numbers in both data columns:
+Store the first 6 numbers in both data columns (used for test input):
 
-```zsh
-x/10uw &left_column
-x/10uw &right_column
+```gdb
+x/6uw &left_column
+x/6uw &right_column
 ```
 
 View the 4 elements in the middle of both columns (memory location is
 incremented by 1992 as column is 4000 bytes long, grouped into 4-byte uints,
 0-indexed):
 
-```zsh
+```gdb
 x/4uw ((char*)&left_column + 1992)
 x/4uw ((char*)&right_column + 1992)
 ```
 
 Display the entire of the left and right column:
 
-```zsh
+```gdb
 x/1000uw &left_column
 x/1000uw &right_column
 ```
