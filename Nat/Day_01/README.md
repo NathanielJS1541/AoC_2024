@@ -2,6 +2,9 @@
 
 - Language of choice: AArch64 Assembly.
 - Difficulty: Yes. (I'm a C# developer...)
+- Final binary size: `5888 bytes`.
+- Test hardware: Raspberry Pi 4.
+- Program runtime: `~4ms`.
 
 <!-- omit from toc -->
 ## Contents
