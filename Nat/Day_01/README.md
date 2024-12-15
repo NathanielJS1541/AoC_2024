@@ -184,7 +184,7 @@ store each column of data:
 
 Store the first 10 numbers in both data columns:
 
-```zsh
+```gdb
 x/10uw &left_column
 x/10uw &right_column
 ```
@@ -193,14 +193,14 @@ View the 4 elements in the middle of both columns (memory location is
 incremented by 1992 as column is 4000 bytes long, grouped into 4-byte uints,
 0-indexed):
 
-```zsh
+```gdb
 x/4uw ((char*)&left_column + 1992)
 x/4uw ((char*)&right_column + 1992)
 ```
 
 Display the entire of the left and right column:
 
-```zsh
+```gdb
 x/1000uw &left_column
 x/1000uw &right_column
 ```
