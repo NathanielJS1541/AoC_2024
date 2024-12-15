@@ -697,6 +697,64 @@ partition_done:
     mov x0, x11             // Return the index of the next partition.
     ret
 
+// Function to print an output value with descriptor text. The prefix text gives
+// context to the value.
+//
+// Arguments:
+// - x0: Pointer to value prefix text.
+// - x1: Prefix text length.
+// - x2: The value to print after the prefix text.
+print_output_value:
+    // Since this function uses branches with links, store the state of the
+    // frame pointer (x29) and link register (x30) so they can be restored
+    // later.
+    //
+    // These are stored on top of the stack by taking the current stack pointer
+    // (sp), decrementing it by 16 bytes before the store instruction (using
+    // pre-indexing denoted by !), and using the stack pointer value to store
+    // the registers to.
+    stp x29, x30, [sp, #-16]!
+
+    // Store the current values of the used callee-saved registers that will be
+    // used to the stack, so they can be reset on return. Note the use of the
+    // zero register (zxr) as a dummy register, to maintain 16-byte alignment of
+    // the stack.
+    stp x19, xzr, [sp, #-16]!
+
+    mov x19, x2             // Move the output value to a callee-saved register.
+
+    // Print the prefix text that explains the value being printed to stdout.
+    // Note that x0 and x1 are already loaded with the correct arguments.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Convert the output value to a string.
+    mov x0, x19             // x0 = stored value.
+    ldr x1, =print_buffer   // x1 = destination array = print buffer.
+    bl uint_to_string       // Call uint_to_string function with provided args.
+
+    // Print the string representation of the output value.
+    mov x1, x0              // Move string length to x1 for print_string call.
+    ldr x0, =print_buffer   // x0 = pointer to the print buffer.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Print the suffix text that terminates the line.
+    ldr x0, =output_suffix  // x0 = pointer to the output suffix.
+    ldr x1, =output_suffix_len // x1 = output suffix length.
+    bl print_string         // Call print_string with provided arguments.
+
+    // Restore previous callee-saved register states from the stack. Note the
+    // use of the zero register (zxr) as a dummy register, to maintain 16-byte
+    // alignment of the stack.
+    ldp x19, xzr, [sp], #16
+
+    // Before returning, load the original frame pointer (x29) and link register
+    // (x30) states back so that the ret functions as expected.
+    //
+    // The values are taken from the top of the stack, and the stack pointer
+    // value is then incremented using a post-index offset to "free" the memory.
+    ldp x29, x30, [sp], #16
+    ret
+
 // Function to write a string to standard output.
 //
 // Arguments:
