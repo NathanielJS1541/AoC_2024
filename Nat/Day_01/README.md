@@ -182,11 +182,11 @@ Once in the program, set breakpoints as normal with `break`, and use `continue`,
 The following commands can then be used within `gdb` to inspect the buffers that
 store each column of data:
 
-Store the first 10 numbers in both data columns:
+Store the first 6 numbers in both data columns (used for test input):
 
 ```gdb
-x/10uw &left_column
-x/10uw &right_column
+x/6uw &left_column
+x/6uw &right_column
 ```
 
 View the 4 elements in the middle of both columns (memory location is
