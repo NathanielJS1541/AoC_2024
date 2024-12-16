@@ -32,7 +32,9 @@ int main()
     //  - one of sizes
 
     vector<unique_ptr<int>> IDs;
+    vector<unique_ptr<int>> IDsCopy;
     vector<unique_ptr<int>> sizes;
+    vector<unique_ptr<int>> sizesCopy;
     int size = 0;
     bool isID = true;
     int id = 0;
@@ -44,116 +46,157 @@ int main()
         size = (int)inputText[i] - 48;
         processedFilelength += size;
         sizes.push_back(make_unique<int>(size));
+        sizesCopy.push_back(make_unique<int>(size));
 
         if (isID)
         {
             IDs.push_back(make_unique<int>(id));
+            IDsCopy.push_back(make_unique<int>(id));
             id++;
             isID = false;
         }
         else
         {
             IDs.push_back(nullptr);
+            IDsCopy.push_back(nullptr);
             isID = true;
         }
     }
+    cout << "IDs array: " << endl;
+    for (int ID = 0; ID < IDs.size(); ID++)
+    {
+        if (IDs[ID].get() != nullptr)
+        {
+            cout << to_string(*(IDs[ID].get()));
+        }
+        else
+        {
+            cout << ".";
+        }
+    }
 
+    cout << endl;
     // the final sum
     uint64_t sum = 0;
-    int decreaser = IDs.size() - 1;
     bool keepLooking = true;
-    int backwardsPos = IDs.size() - 1;
+    int forwardsPos = 0;
+    int additionCount = 0;
 
-    // the final full processed array
-    vector<unique_ptr<int>> processedFile;
-
-    for (int mainIndex = 0; mainIndex < IDs.size(); mainIndex++)
+    // start with the first ID
+    for (int mainIndex = IDs.size() - 1; mainIndex > 0; mainIndex--)
     {
-        if (mainIndex >= backwardsPos)
+        // cout << "Looing at index: " << mainIndex << endl;
+        if (mainIndex <= forwardsPos)
         {
             break;
         }
 
-        // if you have encountered a bit of free space
-        // go backwards through the array until you find a lump of IDs
-        // that will fit
-        if (IDs[mainIndex].get() == nullptr)
+        // get the first non-null ID
+        if (IDsCopy[mainIndex].get() != nullptr)
         {
+            if (*IDsCopy[mainIndex].get() == 1)
+            {
+            }
+
+            cout << "\nLooking at ID: " << to_string(*IDsCopy[mainIndex].get()) << endl;
+
             keepLooking = true;
-            decreaser = backwardsPos;
+
             while (keepLooking)
             {
-                if (decreaser <= mainIndex - 1)
+                if (forwardsPos >= mainIndex - 1 + additionCount)
                 {
+                    // don't move anything around
+                    cout << "This ID will not fit in any space." << endl;
 
-                    cout << "Nothing fit in this space." << endl;
-                    // there where no IDs that fit in this block so fill it with nulls
-                    for (int l = 0; l < *sizes[mainIndex]; l++)
-                    {
-                        processedFile.push_back(nullptr);
-                    }
-
+                    forwardsPos = 0; // start looking from the beginning again for free space and move to the next ID
+                    // stop looking for somewhere to put this item
                     keepLooking = false;
                 }
                 else
                 {
-                    // find the last non null ID
-                    if (IDs[decreaser] != nullptr)
+                    // find the first bit of space
+                    if (IDs[forwardsPos] == nullptr)
                     {
-                        cout << "Looking at ID: " << *IDs[decreaser] << endl;
+                        cout << "Size of lump to move: " << *sizesCopy[mainIndex] << endl;
 
-                        cout << "Size of lump to move: " << *sizes[decreaser] << endl;
-                        cout << "Size of space: " << *sizes[mainIndex] << endl;
+                        cout << "Size of space: " << *sizes[forwardsPos] << endl;
 
                         // check if the size of this ID will fit
-                        if (*sizes[decreaser] <= *sizes[mainIndex])
+                        if (*sizesCopy[mainIndex] <= *sizes[forwardsPos])
                         {
-                            backwardsPos = decreaser - 1;
                             cout << "Moving" << endl;
-                            keepLooking = false;
-                            mainIndex=0; // start looking from the beginning again
-                            for (int l = 0; l < *sizes[mainIndex]; l++)
+                            int sizeSpace = *sizes[forwardsPos];
+                            int sizeMove = *sizesCopy[mainIndex];
+                            int ID = *IDsCopy[mainIndex];
+
+                            // Add in a null ID at the the mainIndex
+                            if (sizeMove != sizeSpace)
                             {
-                                if (l < *sizes[decreaser])
-                                {
-                                    processedFile.push_back(make_unique<int>(*IDs[decreaser]));
-                                }
-                                // add in some nulls until the size of
-                                else
-                                {
-                                    processedFile.push_back(nullptr);
-                                }
+                                cout << "null added with size " << sizeSpace - sizeMove << endl;
+                                sizes.insert(sizes.begin() + forwardsPos + 1, make_unique<int>(sizeSpace - sizeMove));
+                                IDs.insert(IDs.begin() + forwardsPos + 1, nullptr);
+
+                                // put for both the sizes and the ID vectors put this ID at the forward pos index
+                                // and erase it from its current position
+                                additionCount++;
                             }
+
+                            // put for both the sizes and the ID vectors put this ID at the forward pos index
+                            // and erase it from its current position
+                            sizes.erase(sizes.begin() + mainIndex + additionCount);
+                            IDs.erase(IDs.begin() + mainIndex + additionCount);
+
+                            sizes[forwardsPos] = make_unique<int>(sizeMove);
+                            IDs[forwardsPos] = make_unique<int>(ID);
+
+                            forwardsPos = 0; // start looking from the beginning again for free space and move to the next ID
+                            keepLooking = false;
                         }
                     }
-                    decreaser--;
+
+                    forwardsPos++;
                 }
             }
-        }
-        else
-        {
-            cout << "Looking at ID: " << *IDs[mainIndex] << endl;
-            cout << "with size: " << *sizes[mainIndex] << endl;
-            // If the ID is not a blank space then append the correct number of IDs to the processed file
-            for (int k = 0; k < *sizes[mainIndex].get(); k++)
-            {
-                processedFile.push_back(make_unique<int>(*IDs[mainIndex].get()));
-            }
-        }
 
-        cout << "\nThe new processed file is: " << endl;
-        for (auto item = 0; item < processedFile.size(); item++)
-        {
-            if (processedFile[item].get() != nullptr)
+            cout << "IDs array: " << endl;
+            for (int ID = 0; ID < IDs.size(); ID++)
             {
-                cout << to_string(*processedFile[item].get()) << " ";
+                if (IDs[ID].get() != nullptr)
+                {
+                    cout << to_string(*(IDs[ID].get()));
+                }
+                else
+                {
+                    cout << ".";
+                }
             }
-            else
+
+            cout << "\nsizes array: " << endl;
+            for (int size = 0; size < sizes.size(); size++)
             {
-                cout << '.';
+                cout << to_string(*(sizes[size].get()));
             }
+            cout << endl;
         }
-        cout << endl;
+    }
+
+    // make the final processed file
+    vector<unique_ptr<int>> processedFile;
+
+    for (int i = 0; i < IDs.size(); i++)
+    {
+        for (int s = 0; s < *sizes[i]; s++)
+        {
+             if (IDs[i] != nullptr)
+        {
+            processedFile.push_back(make_unique<int>(*IDs[i]));
+        }
+        else{
+            processedFile.push_back(nullptr);
+        }
+            
+        }
     }
 
     cout << "\nThe final processed file is: " << endl;
