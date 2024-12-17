@@ -13,6 +13,7 @@ them 😁.
 | Challenge                                     | Solution            | Language                                                                                  |
 |-----------------------------------------------|---------------------|-------------------------------------------------------------------------------------------|
 | [Day 01](https://adventofcode.com/2024/day/1) | [Day_01](./Day_01/) | [Aarch64 Assembly](https://documentation-service.arm.com/static/64e7245d04d0d65e67136806) |
+| [Day 02](https://adventofcode.com/2024/day/2) | [Day_02](./Day_02/) | [pwsh](https://github.com/PowerShell/PowerShell)                                          |
 
 ## Some Christmas Spirit
 
