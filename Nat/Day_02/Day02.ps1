@@ -208,6 +208,59 @@ function Get-SafeReports {
     return $safeReports
 }
 
+function Read-InputData {
+    <#
+    .SYNOPSIS
+    Open the input data file and parse the data.
+
+    .DESCRIPTION
+    Open the input file and parse the contents. This splits each report into an
+    [int[]], so the final return is an [int[][]] containing all report.
+
+    .PARAMETER inputPath
+    The path to the input file.
+
+    .OUTPUTS
+    [int[][]]
+    An array of reports from the input file. Each report consists of an array of
+    individual levels.
+
+    .EXAMPLE
+    $inputData = Read-InputData -inputPath <path_to_file>
+
+    Parse data from the input file.
+    #>
+
+    # Define the parameters that the function accepts.
+    param (
+        # The path to the input file.
+        [Parameter(Mandatory=$true)]
+        [string]$inputPath
+    )
+
+    # Initialise an empty array, which will contain the parsed input data.
+    $inputData = @()
+
+    # Iterate over each line of the input file to parse it into a report.
+    Get-Content -Path $inputPath | ForEach-Object {
+        # Each line line contains a report, and each report consists of multiple
+        # reports delimited by a space. Split each report into an [int[]]
+        # containing all of the levels, and add it as a complete report to the
+        # $inputData array.
+        #
+        # - "$_ -split ' '" takes each line and splits it into an array of
+        #   strings based on the string locations.
+        # - "ForEach-Object { [int]$_ }" converts each string value into an int.
+        # - ",(<array>)" ensures that each report array is added as a new
+        #   element of the $inputData, rather than appended as individual
+        #   elements to the end of $inputData.
+        $inputData += ,($_ -split ' ' | ForEach-Object { [int]$_ })
+    }
+
+    # Return the parsed input data.
+    return $inputData
+}
+
 function Test-Parameters {
     <#
     .SYNOPSIS
