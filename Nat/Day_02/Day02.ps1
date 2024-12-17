@@ -48,77 +48,23 @@ Set-Variable -Name "ErrInvalidArgs" -Value 1 -Option Constant -Scope Script
 # |                            Function Definitions                            |
 # ------------------------------------------------------------------------------
 
-function Read-InputData {
+function Measure-LevelDifferences {
     <#
     .SYNOPSIS
-    Open the input data file and parse the data.
-
-    .DESCRIPTION
-    Open the input file and parse the contents. This splits each report into an
-    [int[]], so the final return is an [int[][]] containing all report.
-
-    .PARAMETER inputPath
-    The path to the input file.
-
-    .OUTPUTS
-    [int[][]]
-    An array of reports from the input file. Each report consists of an array of
-    individual levels.
-
-    .EXAMPLE
-    $inputData = Read-InputData -inputPath <path_to_file>
-
-    Parse data from the input file.
-    #>
-
-    # Define the parameters that the function accepts.
-    param (
-        # The path to the input file.
-        [Parameter(Mandatory=$true)]
-        [string]$inputPath
-    )
-
-    # Initialise an empty array, which will contain the parsed input data.
-    $inputData = @()
-
-    # Iterate over each line of the input file to parse it into a report.
-    Get-Content -Path $inputPath | ForEach-Object {
-        # Each line line contains a report, and each report consists of multiple
-        # reports delimited by a space. Split each report into an [int[]]
-        # containing all of the levels, and add it as a complete report to the
-        # $inputData array.
-        #
-        # - "$_ -split ' '" takes each line and splits it into an array of
-        #   strings based on the string locations.
-        # - "ForEach-Object { [int]$_ }" converts each string value into an int.
-        # - ",(<array>)" ensures that each report array is added as a new
-        #   element of the $inputData, rather than appended as individual
-        #   elements to the end of $inputData.
-        $inputData += ,($_ -split ' ' | ForEach-Object { [int]$_ })
-    }
-
-    # Return the parsed input data.
-    return $inputData
-}
-
-function Get-LevelDifferences {
-    <#
-    .SYNOPSIS
-    Get the differences between each level in a report.
+    Measure the differences between each level in a report.
 
     .DESCRIPTION
     Iterates over an array of reports, and returns an array of differences for
-    each report. The differences are calculated between each level in a
-    report.
+    each report. The differences are measured between each level in a report.
 
     .PARAMETER reports
     [int[][]]
     An array of reports, where each report is represented by an array of levels.
 
     .EXAMPLE
-    $differences = Get-Differences -reports <reports_from_input>
+    $differences = Measure-LevelDifferences -reports <reports_from_input>
 
-    Calculate the differences between each report.
+    Measure the differences between the levels in each report.
     #>
 
     # Define the parameters that the function accepts.
@@ -155,23 +101,23 @@ function Get-LevelDifferences {
     return $differences
 }
 
-function Get-SafeReports {
+function Measure-SafeReports {
     <#
     .SYNOPSIS
-    Get the number of reports that are considered safe.
+    Measure the number of reports that are considered safe.
 
     .DESCRIPTION
-    Get the number of reports that are "safe" based on the differences between
-    each level within the report. This ensures that all levels follow the same
-    trend (i.e., all differences have the same sign) and that the absolute
-    difference between two levels is between 1 and 3 (inclusive).
+    Measure the number of reports that are "safe" based on the differences
+    between each level within the report. This ensures that all levels follow
+    the same trend (i.e., all differences have the same sign) and that the
+    absolute difference between two levels is between 1 and 3 (inclusive).
 
     .PARAMETER differences
     [int[][]]
     An array of the differences in level within each report.
 
     .EXAMPLE
-    $safeReports = Get-SafeReports -differences <level_differences>
+    $safeReports = Measure-SafeReports -differences <level_differences>
 
     Calculate number of reports that are "safe".
     #>
@@ -314,7 +260,10 @@ Test-Parameters -inputPath $InputPath
 $inputData = Read-InputData -inputPath $InputPath
 
 # Calculate the differences between the levels of each report.
-$differences = Get-LevelDifferences -reports $inputData
+$differences = Measure-LevelDifferences -reports $inputData
+
+# Calculate the number of safe reports without dampening any levels.
+$safeReports = Measure-SafeReports -differences $differences
 
 # Calculate the number of safe reports.
 $safeReports = Get-SafeReports -differences $differences
