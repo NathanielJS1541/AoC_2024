@@ -4,6 +4,10 @@ This folder contains my solutions to the 2024 Advent of Code. I thought I'd keep
 it "interesting" by choosing languages I'm not familiar with, which inevitably
 means each challenge will take me hours...
 
+I've added some recommended extensions and settings to the `.vscode` workspace
+folder to keep them in sync across my devices. Feel free to completely ignore
+them 😁.
+
 ## Table of Contents
 
 | Challenge                                     | Solution            | Language                                                                                  |
