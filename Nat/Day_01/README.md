@@ -25,7 +25,6 @@
     - [Building with Debug Information](#building-with-debug-information)
     - [Using `gdb` to Display Variables](#using-gdb-to-display-variables)
 
-
 ## Requirements
 
 I'm not sure why you'd want to, but if you do want to run this you'll need a
