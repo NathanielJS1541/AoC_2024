@@ -10,7 +10,7 @@ challenges.
             ___ __ __ ____  __  __  ____  _  _    __    __
            // ' |[_]| |[_]) || ((_' '||' |,\/,|  //\\  ((_'
            \\_, |[']| ||'\, || ,_))  ||  ||\/|| //``\\ ,_))
-                                                               
+
 
                                          ,;7,
                                        _ ||:|,
@@ -104,7 +104,7 @@ This should just prevent treading on each others toes, and loss of work etc.
   `.gitignore` templates for various common IDE's (Visual Studio, VSCode,
   JetBrains etc.). If your IDE needs some files ignored in the `.gitignore`, it
   should be added here to ensure any dotfiles your IDE generates when you open
-  the repo are ignored, as these are usually placed in the root. 
+  the repo are ignored, as these are usually placed in the root.
 
 ## Contributors
 
