@@ -9,19 +9,21 @@
 <!-- omit from toc -->
 ## Contents
 
-- [Requirements](#requirements)
-  - [Input Data](#input-data)
-  - [Linux](#linux)
-  - [QEMU User Space Emulator](#qemu-user-space-emulator)
-  - [Assembler and Linker](#assembler-and-linker)
-  - [**(Optional)** Debugger](#optional-debugger)
-  - [Just](#just)
-- [Getting Started](#getting-started)
-- [Debugging](#debugging)
-  - [Checking Return Codes](#checking-return-codes)
-  - [Viewing System Call Logs (QEMU)](#viewing-system-call-logs-qemu)
-  - [Building with Debug Information](#building-with-debug-information)
-  - [Using `gdb` to Display Variables](#using-gdb-to-display-variables)
+- [Advent of Code Day 1](#advent-of-code-day-1)
+  - [Requirements](#requirements)
+    - [Input Data](#input-data)
+      - [Input File Line Ending Modification](#input-file-line-ending-modification)
+    - [Linux](#linux)
+    - [QEMU User Space Emulator](#qemu-user-space-emulator)
+    - [Assembler and Linker](#assembler-and-linker)
+    - [**(Optional)** Debugger](#optional-debugger)
+    - [Just](#just)
+  - [Getting Started](#getting-started)
+  - [Debugging](#debugging)
+    - [Checking Return Codes](#checking-return-codes)
+    - [Viewing System Call Logs (QEMU)](#viewing-system-call-logs-qemu)
+    - [Building with Debug Information](#building-with-debug-information)
+    - [Using `gdb` to Display Variables](#using-gdb-to-display-variables)
 
 
 ## Requirements
@@ -37,6 +39,44 @@ sign in to get a puzzle input.
 
 The path to the puzzle input is passed in as an argument to the program, so it's
 easiest to put it next to `main.s`.
+
+> [!WARNING]
+> At some point throughout the AoC 2024, the line ending style of the input
+> files was changed from `CR LF` to `LF`. You will need to modify `main.s` if
+> you have the earlier `CR LF` style. See
+> [section below](#input-file-line-ending-modification) for more details.
+
+#### Input File Line Ending Modification
+
+I've updated my day 1 solution after the fact to work with input files
+downloaded going forwards (which contain the `LF` line ending). However, if you
+have one of the original files you will need to modify `main.s` to get the
+correct answer (or just re-download the input file...). In the `Constants`
+section at the top of the program, modify the following lines from this:
+
+```Assembly
+// Program constants.
+.equ INPUT_SIZE, 4000       // The number of bytes in each input data column.
+.equ LINE_BUFFER_SIZE, 14   // Number of bytes per line (LF line endings).
+.equ PRINT_BUFFER_SIZE, 32  // The number of bytes to use as a print buffer.
+```
+
+To this:
+
+```Assembly
+// Program constants.
+.equ INPUT_SIZE, 4000       // The number of bytes in each input data column.
+.equ LINE_BUFFER_SIZE, 15   // Number of bytes per line (CR LF line endings).
+.equ PRINT_BUFFER_SIZE, 32  // The number of bytes to use as a print buffer.
+```
+
+When using `LF` line endings instead of `CR LF`, one less byte is used in each
+line. Since the program targets the newer `LF` endings, just increasing the line
+buffer size by a byte gets the program working with the original input files.
+
+I know this seems like a bodge fix, and that's because it _is_. I'd already
+finished this challenge by the time this change was made and honestly my brain
+will melt if I have to write any more assembly.
 
 ### Linux
 

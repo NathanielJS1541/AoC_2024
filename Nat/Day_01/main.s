@@ -42,7 +42,8 @@
 
 // Program constants.
 .equ INPUT_SIZE, 4000       // The number of bytes in each input data column.
-.equ LINE_BUFFER_SIZE, 15   // The number of bytes in the line buffer.
+//.equ LINE_BUFFER_SIZE, 15 // Number of bytes per line (CR LF line endings).
+.equ LINE_BUFFER_SIZE, 14   // Number of bytes per line (LF line endings).
 .equ PRINT_BUFFER_SIZE, 32  // The number of bytes to use as a print buffer.
 
 // -----------------------------------------------------------------------------
@@ -269,10 +270,10 @@ distance_loop:
     ldr x20, =left_column   // x20 = pointer to left array.
     ldr x21, =right_column  // x21 = pointer to right array.
     // Initialise the indexes to -1 to simplify the loops.
-                             // x22 = left segment start index.
-    mov x23, #-1             // x23 = left segment end index.
-                             // x24 = right segment start index.
-    mov x25, #-1             // x25 = right segment end index.
+                            // x22 = left segment start index (uninitialised).
+    mov x23, #-1            // x23 = left segment end index.
+                            // x24 = right segment start index (uninitialised).
+    mov x25, #-1            // x25 = right segment end index.
     // Calculate maximum array index.
     mov x26, INPUT_SIZE     // x26 = size of column arrays in bytes.
     lsr x26, x26, #2        // Divide x26 by 4 to get maximum index (1-based).
@@ -741,8 +742,8 @@ partition:
     csel w15, w14, w12, lt  // w15 = min(max(w10, w11), w12).
     csel w16, w12, w14, lt  // w16 = max(max(w10, w11), w12).
 
-    cmp w13, w15            // Compare min(w10, w11) and min(max(w10, w11), w12).
-    csel w17, w13, w15, gt  // w17 = max(min(w10, w11), min(max(w10, w11), w12)).
+    cmp w13, w15            // Compare min(w10, w11) & min(max(w10, w11), w12).
+    csel w17, w13, w15, gt  // w17= max(min(w10, w11), min(max(w10, w11), w12)).
 
     // Finally, the median is the smallest between the following values:
     // - w16 = max(max(w10, w11), w12).
