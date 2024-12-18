@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <array>
 
 std::fstream open_file_read(const char* filename)
 {
@@ -83,7 +84,7 @@ std::string read_file_into_string(const char* filepath)
 		stream << file.rdbuf();
 		file_as_string =  stream.str();
 	}
-	else
+
 	{
 		file_as_string.empty();
 	}
