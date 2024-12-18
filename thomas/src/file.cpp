@@ -6,8 +6,7 @@
 
 std::fstream open_file_read(const char* filename)
 {
-	std::fstream istrm;
-	istrm.open(filename, std::fstream::in);
+	std::fstream istrm(filename, std::fstream::in);
 	return istrm;
 }
 
@@ -90,4 +89,40 @@ std::string read_file_into_string(const char* filepath)
 	}
 
 	return file_as_string;
+}
+
+unsigned read_delimited_data_into_vector(std::fstream& filestream, std::vector<std::vector<int>>* vec, char delimiter)
+{
+	unsigned n = 0;
+
+	if (filestream.is_open())
+	{
+		std::string line;
+		size_t str_pos = 0;
+		while(std::getline(filestream, line))
+		{
+			if ((int)line.front() == 13)
+			{
+				break; // Detect double newline as end of file parsing.
+			}
+			
+			std::vector<int> in_vec;
+			while((str_pos = line.find(delimiter)) != std::string::npos)
+			{
+				in_vec.push_back(std::stoi(line.substr(0, str_pos)));
+				line.erase(0, str_pos + 1);
+				n++;
+			}
+
+			in_vec.push_back(std::stoi(line));
+			vec->push_back(in_vec);
+		}
+	}
+	else
+	{
+		std::cerr << "Attempting to read a file that is not open!\n";
+		exit(0);
+	}
+
+	return n;
 }
