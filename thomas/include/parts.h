@@ -5,5 +5,6 @@ int day1(void);
 int day2(void);
 int day3(void);
 int day4(void);
+int day5(void);
 
 #endif

@@ -38,4 +38,7 @@ size_t read_file_into_matrix(const char* filepath, std::array<char, SIZE>* arr)
 	return n;
 }
 
+unsigned read_delimited_data_into_vector(std::fstream& filestream, std::vector<std::vector<int>>* vec, char delimiter);
+
+
 #endif /* __FILE_H */
