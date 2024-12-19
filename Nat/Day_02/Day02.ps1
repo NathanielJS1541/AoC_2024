@@ -536,6 +536,12 @@ function Test-Parameters {
 # |                                Main Script                                 |
 # ------------------------------------------------------------------------------
 
+# Ensure the specified path is resolved to an absolute path. Some functions
+# support relative paths and others don't, so ensuring the path is resolved
+# before testing it and continuing the program ensures there are no unexpected
+# errors.
+$InputPath = Resolve-Path -Path $InputPath
+
 # Test the input parameters passed in to the script.
 #
 # If this method returns then the inputs are valid.
