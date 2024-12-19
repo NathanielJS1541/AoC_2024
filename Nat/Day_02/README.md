@@ -3,8 +3,8 @@
 - Language of choice: [pwsh](https://github.com/PowerShell/PowerShell)
 - Difficulty:
 - Final binary size:
-- Test hardware:
-- Program runtime:
+- Test hardware: `Windows Laptop (13th Gen Intel(R) Core(TM) i7-1370P)`.
+- Program runtime: `~250ms`
 
 <!-- omit from toc -->
 ## Contents
