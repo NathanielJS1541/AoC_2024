@@ -433,10 +433,9 @@ function New-ProblemDampenerPermutations {
     }
 
     # Return any permutations for testing, or an empty array if none were found.
-    # Note the use of the array subexpression operator (@()) and unary comma
-    # operator to prevent PowerShell from automatically unwrapping the array if
-    # it only contains a single permutation.
-    return @(,$dampenedPermutations)
+    # Note the use of Write-Output and -NoEnumerate here, to prevent automatic
+    # unwrapping of $dampenedPermutations if a single permutation was found.
+    return Write-Output $dampenedPermutations -NoEnumerate
 }
 
 function Read-InputData {
