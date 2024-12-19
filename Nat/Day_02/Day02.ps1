@@ -76,19 +76,30 @@ function Confirm-ReportSafe {
         [int[]]$reportDifferences
     )
 
-    # Get the number of ascending and descending levels in the current
-    # report, counting only differences within the given limits of
-    # -3 <= x <= -1 and 1 <= x <= 3. Positive differences indicate the
-    # levels were descending, and negative values indicate the levels were
-    # ascending.
-    $descendingCount = ($reportDifferences | Where-Object { $_ -gt 0 -and $_ -le 3 }).Count
-    $ascendingCount = ($reportDifferences | Where-Object { $_ -lt 0 -and $_ -ge -3 }).Count
+    # Initialise the number of ascending differences and ascending differences
+    # to 0 so they can be counted together in a foreach loop.
+    $ascendingCount = 0
+    $descendingCount = 0
 
-    # Check that all level differences within the report had the same trend,
-    # and were all within tolerable levels.
-    $reportSafe = [System.Math]::Max($descendingCount, $ascendingCount) -eq $reportDifferences.Count
+    # Iterate over each level difference in the report to count the number of
+    # ascending and descending differences, counting only differences within the
+    # given limits of -3 <= x <= -1 and 1 <= x <= 3.
+    foreach ($difference in $reportDifferences) {
+        if ($difference -le -1 -and $difference -ge -3) {
+            # Negative differences within the given range indicate the levels
+            # were ascending. (i.e. 4 to 5 difference = 4 - 5 = -1).
+            $ascendingCount++
+        }
+        elseif ($difference -ge 1 -and $difference -le 3) {
+            # Positive differences within the given range indicate the levels
+            # were descending. (i.e. 3 to 1 difference = 3 - 1 = 2).
+            $descendingCount++
+        }
+    }
 
-    return $reportSafe
+    # Return a bool indicating whether all level differences within the report
+    # had the same trend, and were all within tolerable levels.
+    return [System.Math]::Max($ascendingCount, $descendingCount) -eq $reportDifferences.Count
 }
 
 function Measure-LevelDifferences {
@@ -269,9 +280,23 @@ function New-ProblemDampenerPermutations {
     # would allow the report to be classed as safe.
     $dampenedPermutations = @()
 
-    # Count the number of ascending and descending levels in the report.
-    $ascendingCount = ($differences | Where-Object { $_ -lt 0 }).Count
-    $descendingCount = ($differences | Where-Object { $_ -gt 0 }).Count
+    # Initialise the number of ascending and descending differences to 0 so they
+    # can be counted in the same foreach loop.
+    $ascendingCount = 0
+    $descendingCount = 0
+
+    # Iterate over each level difference in the report to count how many are
+    # ascending and how many are descending.
+    foreach ($difference in $differences) {
+        # Negative differences indicate that the levels were ascending.
+        if ($difference -lt 0) {
+            $ascendingCount++
+        }
+        # Positive differences indicate that the levels were descending.
+        elseif ($difference -gt 0) {
+            $descendingCount++
+        }
+    }
 
     # If there are an equal number of ascending and descending levels, I
     # can't think of a way that removing a single value would allow the

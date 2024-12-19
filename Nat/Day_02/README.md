@@ -4,7 +4,7 @@
 - Difficulty:
 - Final binary size:
 - Test hardware: `Windows Laptop (13th Gen Intel(R) Core(TM) i7-1370P)`.
-- Program runtime: `~250ms`
+- Program runtime: `~65ms`
 
 <!-- omit from toc -->
 ## Contents
