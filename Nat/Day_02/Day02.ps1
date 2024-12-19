@@ -472,20 +472,24 @@ function Read-InputData {
     # Initialise an empty array, which will contain the parsed input data.
     $inputData = @()
 
-    # Iterate over each line of the input file to parse it into a report.
-    Get-Content -Path $inputPath | ForEach-Object {
+    # Use [System.IO.File]::ReadAllLines() to read all of the data from the file
+    # at once rather than Get-Content as it is faster.
+    $fileContents = [System.IO.File]::ReadAllLines($inputPath)
+
+    # Loop through each line in the file and parse it as a report.
+    foreach ($line in $fileContents) {
         # Each line line contains a report, and each report consists of multiple
         # reports delimited by a space. Split each report into an [int[]]
         # containing all of the levels, and add it as a complete report to the
         # $inputData array.
         #
-        # - "$_ -split ' '" takes each line and splits it into an array of
+        # - "$line.Split(' ')" takes each line and splits it into an array of
         #   strings based on the string locations.
         # - "ForEach-Object { [int]$_ }" converts each string value into an int.
         # - ",(<array>)" ensures that each report array is added as a new
         #   element of the $inputData, rather than appended as individual
         #   elements to the end of $inputData.
-        $inputData += ,($_ -split ' ' | ForEach-Object { [int]$_ })
+        $inputData += ,($line.Split(' ') | ForEach-Object { [int]$_ })
     }
 
     # Return the parsed input data.
