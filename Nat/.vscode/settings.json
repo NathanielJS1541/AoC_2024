@@ -1,0 +1,10 @@
+{
+    "editor.rulers": [
+        80
+    ],
+    "cSpell.language": "en-GB",
+    "markdown.extension.print.theme": "dark",
+    "markdown.extension.print.imgToBase64": true,
+    "markdown.extension.preview.autoShowPreviewToSide": true,
+    "markdown.extension.toc.levels": "2..6",
+}

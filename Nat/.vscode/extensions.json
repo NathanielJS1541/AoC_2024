@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "mkornelsen.vscode-arm64",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "ms-vscode.powershell",
+        "shardulm94.trailing-spaces"
+    ]
+}
