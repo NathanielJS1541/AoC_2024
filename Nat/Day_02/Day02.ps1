@@ -29,7 +29,7 @@
 # Define the parameters that the script accepts.
 param (
     # The path to the input file. This is required for the script to run.
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$InputPath
 )
 
@@ -72,7 +72,7 @@ function Confirm-ReportSafe {
     # Define the parameters that the function accepts.
     param (
         # A report containing the level differences to check.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [int[]]$reportDifferences
     )
 
@@ -124,7 +124,7 @@ function Measure-LevelDifferences {
     # Define the parameters that the function accepts.
     param (
         # The reports to get the differences for.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [int[][]]$reports
     )
 
@@ -148,7 +148,7 @@ function Measure-LevelDifferences {
 
         # After calculating the differences for each level within the report,
         # store the entire array as a new element of the $differences array.
-        $differences += ,($reportDifferences)
+        $differences += , $reportDifferences
     }
 
     # Return the calculated level differences.
@@ -193,9 +193,9 @@ function Measure-SafeReports {
     # Define the parameters that the function accepts.
     param (
         # The differences between each level in each report.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [int[][]]$differences,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [bool]$useDampener
     )
 
@@ -216,11 +216,11 @@ function Measure-SafeReports {
 
             # Crete permutations of the original report level differences with
             # the "Problem Dampener" applied.
-            $dampened = New-ProblemDampenerPermutations -differences $reportDifferences
+            $dampenedPermutations = New-ProblemDampenerPermutations -differences $reportDifferences
 
             # After generating each permutation of the report differences, check
             # each one to see if it is now "safe".
-            foreach ($permutation in $dampened) {
+            foreach ($permutation in $dampenedPermutations) {
                 if (Confirm-ReportSafe -reportDifferences $permutation) {
                     # If the report is now safe, increment the $safeReports and
                     # immediately break out of the loop. It doesn't matter which
@@ -270,7 +270,7 @@ function New-ProblemDampenerPermutations {
     # Define the parameters that the function accepts.
     param (
         # The differences between each level in each report.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [int[]]$differences
     )
 
@@ -382,7 +382,7 @@ function New-ProblemDampenerPermutations {
 
         # Create the permutation where the first level in the level
         # difference is effectively removed.
-        if ($reportStart){
+        if ($reportStart) {
             # If the first array segment of the report is not empty,
             # then the removed "unsafe" level difference needs to be
             # added to the difference that came before it, to
@@ -408,13 +408,13 @@ function New-ProblemDampenerPermutations {
                 $removeFirst[($sampleIndex - 1)] = $newDifference
 
                 # Add the permutation to the array to check later.
-                $dampenedPermutations += ,($removeFirst)
+                $dampenedPermutations += , $removeFirst
             }
         }
         else {
             # If the removed level difference is at the start of the
             # array, then no modification is needed after it is removed.
-            $dampenedPermutations += ,($trimmedReport)
+            $dampenedPermutations += , $trimmedReport
         }
 
 
@@ -447,13 +447,13 @@ function New-ProblemDampenerPermutations {
                 $removeLast[$sampleIndex] = $newValue
 
                 # Add the permutation to the array to check later.
-                $dampenedPermutations += ,($removeLast)
+                $dampenedPermutations += , $removeLast
             }
         }
         else {
             # If the removed level difference is at the end of the
             # array, then no modification is needed after it is removed.
-            $dampenedPermutations += ,($trimmedReport)
+            $dampenedPermutations += , $trimmedReport
         }
     }
 
@@ -489,7 +489,7 @@ function Read-InputData {
     # Define the parameters that the function accepts.
     param (
         # The path to the input file.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$inputPath
     )
 
@@ -513,7 +513,7 @@ function Read-InputData {
         # - ",(<array>)" ensures that each report array is added as a new
         #   element of the $inputData, rather than appended as individual
         #   elements to the end of $inputData.
-        $inputData += ,($line.Split(' ') | ForEach-Object { [int]$_ })
+        $inputData += , ($line.Split(' ') | ForEach-Object { [int]$_ })
     }
 
     # Return the parsed input data.
@@ -544,7 +544,7 @@ function Test-Parameters {
     # Define the parameters that the function accepts.
     param (
         # The path to the input file.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$inputPath
     )
 
