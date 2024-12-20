@@ -46,11 +46,7 @@
 .equ LINE_BUFFER_SIZE, 14   // Number of bytes per line (LF line endings).
 .equ PRINT_BUFFER_SIZE, 32  // The number of bytes to use as a print buffer.
 
-// -----------------------------------------------------------------------------
-// |                         Initialised "Static" Data                         |
-// -----------------------------------------------------------------------------
-
-.section .data
+.section .rodata
     // Align the data section to 16-byte boundaries.
     .align 4                // Align to 2^4 = 16 bytes.
     // The expected option to signify that the file name is being passed in to
@@ -84,6 +80,7 @@
 // -----------------------------------------------------------------------------
 // |                            Uninitialised Data                             |
 // -----------------------------------------------------------------------------
+
 .section .bss
     // Buffers are included in the .bss section to ensure they do not increase
     // the binary size, since they do not need to be initialised.
