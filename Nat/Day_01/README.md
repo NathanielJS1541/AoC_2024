@@ -2,28 +2,27 @@
 
 - Language of choice: AArch64 Assembly.
 - Difficulty: Yes. (I'm a C# developer...)
-- Final binary size: `5888 bytes`.
+- Final binary size: `5896 bytes`.
 - Test hardware: Raspberry Pi 4.
 - Program runtime: `~4ms`.
 
 <!-- omit from toc -->
 ## Contents
 
-- [Advent of Code Day 1](#advent-of-code-day-1)
-  - [Requirements](#requirements)
-    - [Input Data](#input-data)
-      - [Input File Line Ending Modification](#input-file-line-ending-modification)
-    - [Linux](#linux)
-    - [QEMU User Space Emulator](#qemu-user-space-emulator)
-    - [Assembler and Linker](#assembler-and-linker)
-    - [**(Optional)** Debugger](#optional-debugger)
-    - [Just](#just)
-  - [Getting Started](#getting-started)
-  - [Debugging](#debugging)
-    - [Checking Return Codes](#checking-return-codes)
-    - [Viewing System Call Logs (QEMU)](#viewing-system-call-logs-qemu)
-    - [Building with Debug Information](#building-with-debug-information)
-    - [Using `gdb` to Display Variables](#using-gdb-to-display-variables)
+- [Requirements](#requirements)
+  - [Input Data](#input-data)
+    - [Input File Line Ending Modification](#input-file-line-ending-modification)
+  - [Linux](#linux)
+  - [QEMU User Space Emulator](#qemu-user-space-emulator)
+  - [Assembler and Linker](#assembler-and-linker)
+  - [**(Optional)** Debugger](#optional-debugger)
+  - [Just](#just)
+- [Getting Started](#getting-started)
+- [Debugging](#debugging)
+  - [Checking Return Codes](#checking-return-codes)
+  - [Viewing System Call Logs (QEMU)](#viewing-system-call-logs-qemu)
+  - [Building with Debug Information](#building-with-debug-information)
+  - [Using `gdb` to Display Variables](#using-gdb-to-display-variables)
 
 ## Requirements
 
