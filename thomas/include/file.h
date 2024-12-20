@@ -26,7 +26,7 @@ size_t read_file_into_matrix(const char* filepath, std::array<char, SIZE>* arr)
 	{
 		while((file.good()) && (file.get(c)))
 		{
-			if ((unsigned)c > 0x40)
+			if ((c != 13) && (c != 10))
 			{
 				(*arr)[n++] = c;
 			}
