@@ -112,6 +112,7 @@ Here you can get links to the READMEs within everyone's folder.
 
 - [Aedan](./Aedan/)
 - [Alec](./alec/)
+- [David](./david/)
 - [Dom](./dom/)
 - [Felix](./Felix/)
 - [Kitty](./kitty/)
