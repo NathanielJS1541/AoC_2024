@@ -1,0 +1,88 @@
+@"
+# ------------------------------
+# C++ Specific Ignored Files
+# ------------------------------
+
+# Object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Libraries
+*.lib
+*.a
+*.so
+*.dll
+
+# Debug files
+*.dSYM/
+*.dmp
+
+# Build directories
+/build/
+/bin/
+/debug/
+/release/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Visual Studio specific files
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# ------------------------------
+# Editor and OS Specific Ignored Files
+# ------------------------------
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Linux
+*~
+
+# Vim
+*.swp
+
+# Emacs
+*~
+
+# Visual Studio Code
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# ------------------------------
+# Ensure .cpp and .txt Files are Tracked
+# ------------------------------
+
+# Do not ignore .cpp and .txt files
+!*.cpp
+!*.txt
+"@ | Set-Content .gitignore
