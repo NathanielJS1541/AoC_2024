@@ -9,8 +9,8 @@
 //#include <sstream>
 //#include <vector>
 //#include <string>
-//
-//bool isSafe(const std::vector<int>& levels) {
+//using namespace std;
+//bool isSafe(const vector<int>& levels) {
 //    if (levels.size() < 2) return false; // Cannot determine from a single level
 //
 //    bool increasing = true;
@@ -25,19 +25,19 @@
 //    return (increasing || decreasing) && levels.size() > 1; // Ensure at least two elements
 //}
 //
-//int countSafeReports(const std::string& filename) {
-//    std::ifstream inputFile(filename);
-//    std::string line;
+//int countSafeReports(const string& filename) {
+//    ifstream inputFile(filename);
+//    string line;
 //    int safeCount = 0;
 //
 //    if (!inputFile.is_open()) {
-//        std::cerr << "Error opening file: " << filename << std::endl;
+//        cerr << "Error opening file: " << filename << std::endl;
 //        return -1; // Return -1 to indicate error
 //    }
 //
 //    while (std::getline(inputFile, line)) {
-//        std::istringstream iss(line);
-//        std::vector<int> levels;
+//        istringstream iss(line);
+//        vector<int> levels;
 //        int level;
 //
 //        while (iss >> level) {
@@ -54,10 +54,10 @@
 //}
 //
 //int main() {
-//    std::string filename = "input01.txt"; // specify the input file name
+//    string filename = "input01.txt"; // specify the input file name
 //    int numberOfSafeReports = countSafeReports(filename);
 //    if (numberOfSafeReports >= 0) {
-//        std::cout << "Number of safe reports: " << numberOfSafeReports << std::endl;
+//        cout << "Number of safe reports: " << numberOfSafeReports << endl;
 //    }
 //    return 0;
 //}
