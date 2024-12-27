@@ -506,16 +506,10 @@ fabric.properties
 *.csv
 *.tsv
 *.txt
-/Felix/Day1/.stack-work
+
+## Felix's Hakell gubbins
+.stack-work/
+dist-newstyle/
 *.yaml
 *.cabal
 *.lock
-/Felix/Day2/Haskell/.vscode
-/Felix/Day3/Haskell/.vscode
-/Felix/Day1/Haskell/.vscode
-/Felix/Day1/Haskell/.stack-work
-/Felix/Day2/Haskell/.stack-work
-/Felix/Day3/Haskell/.stack-work
-/Felix/Day4/Haskell/.stack-work
-/Felix/Day4/Haskell/.vscode
-/Felix/Day3/Haskell/dist-newstyle
