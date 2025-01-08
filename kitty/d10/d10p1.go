@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"os"
-	"strconv"
 )
 
 func main() {
@@ -27,18 +26,15 @@ func d10p1() {
 		panic(err)
 	}
 
-	branchesSlice := make([]Branch, 10000)
-
-	currentId := 0
-	numberofStarts := 0
+	branchesSlice := make([]Branch, 0)
+	width
 
 	for row, element := range records {
-		for col, char := range element {
-			c, err := strconv.Atoi(char)
-
-			if err != nil {
-				panic(err)
+		for col, char := range element[0] {
+			if char == '.' {
+				continue
 			}
+			c := char - '0'
 
 			// find zeros
 			if c == 0 {
@@ -49,60 +45,93 @@ func d10p1() {
 
 	dir := 0
 	finished := false
-	allfinished := false
+	allFinished := false
 	newBranchesAdded := false
+	fullLength := 9
 	continueBranch := false
+	currentId := 0
 	lengthOfPrevLoop := 0
+	newCol := 0
+	newRow := 0
+	dirStr := "up"
+
+	for index, branch := range branchesSlice {
+		println("branch number:", index)
+		println("coordinate:", branch.coordinate[0], branch.coordinate[1])
+		println("number at:", branch.index)
+		println()
+	}
 
 	// Go down each branch
-	for !allfinished {
+	for !allFinished {
 
 		// keep going until no more branches have been added
 		newBranchesAdded = false
+		currentLength := len(branchesSlice) - lengthOfPrevLoop
 
-		for i := lengthOfPrevLoop; i < len(branchesSlice)-lengthOfPrevLoop; i++ {
+		for i := lengthOfPrevLoop; i < currentLength; i++ {
 
-			newRow := branchesSlice[i].coordinate[0]
-			newCol := branchesSlice[i].coordinate[1]
+			for j := 0; j <= fullLength; j++ {
 
-			// move to the next index down this branch
-			branchesSlice[i].index++
+				// move to the next index down this branch
+				branchesSlice[i].index++
+				dir = 0
+				finished = false
+				continueBranch = false
 
-			for !finished {
-				switch dir {
-				case 1:
-					newRow--
-				case 2:
-					newRow++
-				case 3:
-					newCol++
-				case 4:
-					newCol--
-					finished = true
-				}
+				for !finished {
+					newRow = branchesSlice[i].coordinate[0]
+					newCol = branchesSlice[i].coordinate[1]
 
-				next, err := strconv.Atoi(records[newRow][newCol])
+					switch dir {
+					case 0:
+						dirStr = "up"
+						newRow--
+					case 1:
+						dirStr = "down"
+						newRow++
+					case 2:
+						dirStr = "right"
+						newCol++
+					case 3:
+						dirStr = "left"
+						newCol--
+						finished = true
+					}
 
-				if err != nil {
-					panic(err)
-				}
+					dir++
+					if newRow < 0 || newCol < 0 {
+						continue
+					}
 
-				if next == branchesSlice[i].index {
-					if !continueBranch {
-						continueBranch = true
-					} else {
-						newBranchesAdded = true
-						branchesSlice = append(branchesSlice, Branch{coordinate: [2]int{newRow, newCol}, index: branchesSlice[i].index})
-						currentId++
+					next := records[newRow][0][newCol] - '0'
+
+					if next == '.' {
+						continue
+					}
+
+					if int(next) == branchesSlice[i].index {
+						println(next)
+						println(dirStr)
+
+						if !continueBranch {
+							continueBranch = true
+							branchesSlice[i].coordinate[0] = newRow
+							branchesSlice[i].coordinate[1] = newCol
+						} else {
+							newBranchesAdded = true
+							branchesSlice = append(branchesSlice, Branch{coordinate: [2]int{branchesSlice[i].coordinate[0], branchesSlice[i].coordinate[1]}, index: branchesSlice[i].index})
+							currentId++
+						}
 					}
 				}
 			}
 		}
 
-		lengthOfPrevLoop = len(branchesSlice) - lengthOfPrevLoop
+		lengthOfPrevLoop = currentLength
 
-		if !newBranchesAdded {
-			allfinished = true
+		if !newBranchesAdded && !continueBranch {
+			allFinished = true
 		}
 	}
 }
