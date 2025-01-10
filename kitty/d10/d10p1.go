@@ -15,7 +15,7 @@ type Branch struct {
 }
 
 func d10p1() {
-	// 1. Parse the .txt file
+
 	f, _ := os.Open("test.txt")
 	defer f.Close()
 
@@ -27,7 +27,8 @@ func d10p1() {
 	}
 
 	branchesSlice := make([]Branch, 0)
-	width
+	branchesMask := make([]bool, 0)
+	width := len(records[0][0])
 
 	for row, element := range records {
 		for col, char := range element[0] {
@@ -79,32 +80,36 @@ func d10p1() {
 				finished = false
 				continueBranch = false
 
+				newRow = branchesSlice[i].coordinate[0]
+				newCol = branchesSlice[i].coordinate[1]
+
 				for !finished {
-					newRow = branchesSlice[i].coordinate[0]
-					newCol = branchesSlice[i].coordinate[1]
+					thisRow := newRow
+					thisCol := newCol
 
 					switch dir {
 					case 0:
 						dirStr = "up"
-						newRow--
+						thisRow--
 					case 1:
 						dirStr = "down"
-						newRow++
+						thisRow++
 					case 2:
 						dirStr = "right"
-						newCol++
+						thisCol++
 					case 3:
 						dirStr = "left"
-						newCol--
+						thisCol--
 						finished = true
 					}
 
 					dir++
-					if newRow < 0 || newCol < 0 {
+
+					if thisRow < 0 || thisCol < 0 || thisRow >= width || thisCol >= width {
 						continue
 					}
 
-					next := records[newRow][0][newCol] - '0'
+					next := records[thisRow][0][thisCol] - '0'
 
 					if next == '.' {
 						continue
@@ -116,14 +121,19 @@ func d10p1() {
 
 						if !continueBranch {
 							continueBranch = true
-							branchesSlice[i].coordinate[0] = newRow
-							branchesSlice[i].coordinate[1] = newCol
+							branchesSlice[i].coordinate[0] = thisRow
+							branchesSlice[i].coordinate[1] = thisCol
 						} else {
 							newBranchesAdded = true
-							branchesSlice = append(branchesSlice, Branch{coordinate: [2]int{branchesSlice[i].coordinate[0], branchesSlice[i].coordinate[1]}, index: branchesSlice[i].index})
+							branchesSlice = append(branchesSlice, Branch{coordinate: [2]int{thisRow, thisCol}, index: branchesSlice[i].index})
 							currentId++
 						}
 					}
+				}
+
+				// the current branch died
+				if !continueBranch {
+					branchesMask[i].append(false)
 				}
 			}
 		}
